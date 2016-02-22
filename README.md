@@ -2,7 +2,7 @@
 A system for interactive poetry.
 
 ## To-Do
-- [] TEDx transcript database
+- [x] TEDx transcript database
 - [] Client Code
 - [] Server Code
 
