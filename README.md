@@ -8,8 +8,6 @@ A system for interactive poetry.
 - [ ] Controller
 - [ ] Theater
 - [ ] Audio
-- [ ] Testing
-	- [ ] Markov
 
 ## User Interaction 1.0
 - Reader speaks the poem from **controller** site.
@@ -26,4 +24,3 @@ A system for interactive poetry.
 - Corpus is stored as corpus.csv in **data** folder. Must have at least a "content" column. Other columns can include data such as author, views, keywords. 
 - Score is stored as score.md in **data** folder.
 - Each word in the score is correlated to a corpus item. This can be done by simply by looking for an item with the most occurances of the tapped word.
-- **Controller** 
