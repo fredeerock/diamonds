@@ -3,10 +3,27 @@ A system for interactive poetry.
 
 ## To-Do
 - [x] TEDx transcript database
-- [ ] Markov model
-- [ ] Client Code
-- [ ] Server Code
+- [ ] Server (app.js)
+- [ ] User
+- [ ] Controller
+- [ ] Theater
+- [ ] Audio
+- [ ] Testing
+	- [ ] Markov
 
-## User Interaction
-- Vince reads poem while audience members each see a his text from each section appear on their screen.
-- Audience members tap words from the text to assign weights to 
+## User Interaction 1.0
+- Reader speaks the poem from **controller** site.
+- Audience members see his text from each section appear on their screen from **user** site.
+- Audience members tap words from the text to assign weights to corresponding TED talks.
+- The combination of corresponding talks creates the corpus from which to create a new section of similar length. The weights increase with each word tap.
+- This new section is projected in the **theater** view. 
+
+## User Interaction 2.0
+- The *new* sections get fed back to the **controller** view. 
+- Correlation can be done with semantic comparison instead of word count.
+
+## Setup
+- Corpus is stored as corpus.csv in **data** folder. Must have at least a "content" column. Other columns can include data such as author, views, keywords. 
+- Score is stored as score.md in **data** folder.
+- Each word in the score is correlated to a corpus item. This can be done by simply by looking for an item with the most occurances of the tapped word.
+- **Controller** 
