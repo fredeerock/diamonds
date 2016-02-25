@@ -16,7 +16,9 @@ var app = express();
 
 app.use(express.static(__dirname + '/public'));
 
+// ***************************************************
 //	OSC Setup for sending (and receiving) OSC (to Max)
+
 var osc = require('node-osc');
 
 // oscServer is used for receiving osc messages (from Max)
@@ -35,9 +37,11 @@ oscServer.on("message", function (msg, rinfo) {
 // oscClient is used to send osc messages (to Max)
 var oscClient = new osc.Client('167.96.127.8', 7745);
 
+// ***************************************************
 // server is the node server (web app via express)
 // this code launches the server on port 80 and switches the user id away from sudo
 // apparently this makes it more secure - if something goes awry it isn't running under the superuser.
+
 var server = http.createServer(app)
 	.listen(8000, function(err) {
 		if (err) return cb(err);
@@ -53,7 +57,7 @@ var server = http.createServer(app)
 // start socket.io listening on the server
 var io = sio.listen(server);
 
-// *********************
+// ***************************************************
 // Global Variables!
 
 var ioClients = [];		// list of clients who have logged in.
@@ -61,7 +65,7 @@ var currentSection = 0;		// current section.
 var theaterID;
 var conrollerID;
 
-// *********************
+// ***************************************************
 
 // Respond to web sockets with socket.on
 io.sockets.on('connection', function (socket) {
@@ -184,9 +188,10 @@ io.sockets.on('connection', function (socket) {
 		sendSection(currentSection);
 	})
 
-	// *********************
+	// ***************************************************
 	// Functions for handling stuff
 	// **** SECTIONS ****
+
 	var sectionTitles = ["Welcome", "Preface", "Section 1", "Section 2", "Section 3", 
 		"Section 4", "Section 5", "Section 6", "Section 7", "Section 8", "Section 9", 
 		"Section 10", "Section 11", "Section 12", "Section 13", "Section 14", "Section 15",  
@@ -251,13 +256,3 @@ io.sockets.on('connection', function (socket) {
 	};
 
 });
-
-function getRandomColor() {
-	var letters = '0123456789ABCDEF'.split('');
-	var color = '#';
-	for (var i = 0; i < 6; i++ ) {
-	    color += letters[Math.floor(Math.random() * 16)];
-	}
-	return color;
-}
-
