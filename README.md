@@ -24,3 +24,6 @@ A system for interactive poetry.
 - Corpus is stored as corpus.csv in **data** folder. Must have at least a "content" column. Other columns can include data such as title, author, views, and keywords. 
 - Score is stored as score.md in **data** folder.
 - Each word in the score is correlated to a corpus item. This can be done by simply by looking for an item with the most occurances of the tapped word.
+
+## Ideas
+- Maybe use redis to store content
