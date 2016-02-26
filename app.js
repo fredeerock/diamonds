@@ -1,3 +1,13 @@
+var redis = require("redis");
+var client = redis.createClient();
+
+client.on("error", function (err) {
+    console.log("Error " + err);
+});
+
+
+
+
 // ***************************************************
 //	NEXUS Node SERVER
 //	Jesse Allison (2015)
@@ -11,6 +21,8 @@
 var express = require('express'),
 		sio = require('socket.io'),
 		http = require('http');
+
+var mark = require("./markov.js");
 
 var app = express();
 
@@ -142,12 +154,21 @@ io.sockets.on('connection', function (socket) {
 
 	socket.on('item' , function(data) {
 		console.log(socket.id + " tapped item: " + data);
+
+		// LINDEX mylist 0
+		client.lindex("markov", 0, function (err, data) {
+			io.sockets.emit('chat', data);
+			console.log(data);
+		})
+
+
 		// TODO: Take out all the socket.broadcast.emits.
 		// socket.broadcast.emit('chat', socket.id + " : " + data, 1);
 
-		if(io.sockets.connected[theaterID]!== null) {
-			io.sockets.connected[theaterID].emit('itemback', {phrase: data, color: socket.userColor}, 1);
-		}
+		// diamonds > Took this out...
+		// if(io.sockets.connected[theaterID]!== null) {
+		// 	io.sockets.connected[theaterID].emit('itemback', {phrase: data, color: socket.userColor}, 1);
+		// }
 
 		// socket.broadcast.emit('itemback', {phrase: data, color: socket.userColor}, 1);
 		oscClient.send('/causeway/phrase/number', socket.id, data);

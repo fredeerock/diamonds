@@ -7,6 +7,8 @@ client.on("error", function (err) {
     console.log("Error " + err);
 });
 
+var sio = require('socket.io');
+
 // client.set("string key", "string val", redis.print);
 // client.hset("hash key", "hashtest 1", "some value", redis.print);
 // client.hset(["hash key", "hashtest 2", "some other value"], redis.print);
@@ -55,7 +57,9 @@ function handleParsing(err, data) {
 			console.log("markov sie:", markov.size());
 			if (!markov.ready()) return;
 			lines = markov.generateSentences(10);
-			console.log(lines);
+			linesJoined = lines.join(' ');
+			client.lpush("markov", linesJoined, redis.print);
+			console.log(linesJoined);
 		}
 
 

@@ -13,7 +13,7 @@
 
 	</div>
 
-<div id="causeway-text"></div>
+<div id="causeway-text" style="width:200px"></div>
 
 	<script>
 		// var socket = io.connect('http://emdm.io/', { path: '/sio/socket.io' });
@@ -23,6 +23,8 @@
 		
 		socket.on('chat', function(data) {
 			console.log(data);
+			document.getElementById("causeway-text").innerHTML= data;
+
 		});
 
 		socket.on('itemback', function(data){
