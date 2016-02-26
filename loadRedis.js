@@ -27,19 +27,23 @@ function handleRow(data) {
     console.log(data.title, "by", data.author)
 	client.rpush(listName, JSON.stringify(data, escape), redis.print);
 
-function escape (key, val) {
-    if (typeof(val)!="string") return val;
-    return val
-      .replace(/[\"]/g, '\\"')
-      .replace(/[\\]/g, '\\\\')
-      .replace(/[\/]/g, '\\/')
-      .replace(/[\b]/g, '\\b')
-      .replace(/[\f]/g, '\\f')
-      .replace(/[\n]/g, '\\n')
-      .replace(/[\r]/g, '\\r')
-      .replace(/[\t]/g, '\\t')
-    ; 
-}
+	// have to escape newlines
+	function escape (key, val) {
+	    if (typeof(val)!="string") return val;
+	    return val
+	      // .replace(/[\"]/g, '\\"')
+	      // .replace(/[\\]/g, '\\\\')
+	      .replace(/[\']/g, '')
+	      .replace(/[\"]/g, '')
+	      .replace(/[\/]/g, '\\/')
+	      .replace(/[\b]/g, '\\b')
+	      .replace(/[\f]/g, '\\f')
+	      .replace(/[\n]/g, '\\n')
+	      // .replace(/[\r]/g, '\\r')
+	      .replace(/[\r]/g, ' ')
+	      .replace(/[\t]/g, '\\t')
+	    ; 
+	}
 }
 
 // when done reading the file display total number of items and quit redis connection

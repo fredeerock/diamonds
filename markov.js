@@ -19,6 +19,7 @@ client.on("error", function (err) {
 // });
 var dataObj = [];
 var listName = "items";
+var listLength;
 
 // client.lindex(listName, 0, function (err, data) {
 // 	console.log(JSON.parse(data))
@@ -27,6 +28,7 @@ var listName = "items";
 client.llen(listName, handleLength);
 
 function handleLength(err, len){
+	listLength = len;
 	console.log("---Total Number of Items:", len, "---");
 	for (i = 0; i < len; i++ ) {
 		client.lindex(listName, i, handleParsing)
@@ -36,28 +38,37 @@ function handleLength(err, len){
 
 function handleParsing(err, data) {
 
-	// function jsonEscape(str)  {
- //    	return str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t");
-	// }
-	// var data2 = '{"count" : 1, "stack" : "sometext\r\rdd"}';
-	// var data1 = eval('('+ jsonEscape(data2) +')');
-	// console.log(data1);
-
 	dataObj.push(JSON.parse(data));
 	console.log(dataObj);
 	console.log(dataObj.length);
 
-	if (dataObj.length == 3) {
+	if (dataObj.length == listLength) {
 		console.log("-------------")
 		console.log(dataObj[2].content)
+		console.log(listLength);
+
+		var markov = new rita.RiMarkov(3);
+
+		generate();
+
+		function generate() {
+			markov.loadText(dataObj[0].content);
+			markov.loadText(dataObj[1].content);
+			markov.loadText(dataObj[2].content);
+			if (!markov.ready()) return;
+			lines = markov.generateSentences(10);
+			console.log(lines);
+		}
+
+
 	}
 
 
 }
 
 // function done() {
-// 	console.log(i);
-// 	console.log(dob);
+// 	console.log(dataObj[2].content)
+
 // }
 
 // var rs = rita.RiString("The elephant took a bite!");
@@ -73,7 +84,10 @@ function handleParsing(err, data) {
 // 	});
 // });
 
-var rm = new rita.RiMarkov(3);
+
+
+
+
 // rm.loadText()
 
 // rm.loadText(theText);
@@ -87,8 +101,4 @@ var rm = new rita.RiMarkov(3);
 // markov.loadText(data1);
 // markov.loadText(data2);
 
-// function generate() {
-// 	if (!markov.ready()) return;
-// 	lines = markov.generateSentences(10);
-// 	console.log(lines);
-// }
+
