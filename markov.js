@@ -1,12 +1,11 @@
-// var redis = require("redis"),
-//     client = redis.createClient();
+var redis = require("redis"),
+    client = redis.createClient();
+var csv = require('csv-parser');
+var fs = require('fs');
 
-// // if you'd like to select database 3, instead of 0 (default), call
-// // client.select(3, function() { /* ... */ });
-
-// client.on("error", function (err) {
-//     console.log("Error " + err);
-// });
+client.on("error", function (err) {
+    console.log("Error " + err);
+});
 
 // client.set("string key", "string val", redis.print);
 // client.hset("hash key", "hashtest 1", "some value", redis.print);
@@ -19,11 +18,26 @@
 //     client.quit();
 // });
 
-var csv = require('csv-parser')
-var fs = require('fs')
+var listName = "items";
 
-fs.createReadStream('data/test.csv')
-  .pipe(csv())
-  .on('data', function (data) {
-  	console.log('Title: %s', data.title);
-  })
+client.ltrim(listName, -1, -2, handleTrim);
+
+function handleTrim() {
+	console.log("trimmed");
+	fs.createReadStream('data/test.csv').pipe(csv()).on('data', handleRead);
+}
+
+function handleRead(err, data) {
+	// console.log(data);
+	client.rpush(listName, data, handlePush);
+	console.log("pushing...");
+}
+
+function handlePush (err, push){
+	console.log('finished!', push);
+	client.llen(listName, function(err, len){console.log(len)});
+}
+
+
+
+
