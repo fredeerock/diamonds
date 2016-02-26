@@ -9,7 +9,7 @@ body {
 }
 
 #causeway-text {
-	white-space: pre;
+	/*white-space: pre;*/
 	font-size: 1.3em;
   margin: auto;
   width: 60%;

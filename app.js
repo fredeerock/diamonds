@@ -22,7 +22,6 @@ var express = require('express'),
 		sio = require('socket.io'),
 		http = require('http');
 
-var mark = require("./markov.js");
 
 var app = express();
 
@@ -154,8 +153,10 @@ io.sockets.on('connection', function (socket) {
 
 	socket.on('item' , function(data) {
 		console.log(socket.id + " tapped item: " + data);
-
+// handleParsing();
 		// LINDEX mylist 0
+		var mark = require("./markov.js");
+
 		client.lindex("markov", 0, function (err, data) {
 			io.sockets.emit('chat', data);
 			console.log(data);
