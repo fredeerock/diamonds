@@ -14,7 +14,7 @@ A system for interactive poetry.
 - Audience members see the text from each section appear on their screen from **user** site.
 - Audience members tap words from the text to assign weights to corresponding TED talks.
 - The combination of corresponding talks create the corpus from which a new section of similar length is made. The weights increase with each word tap.
-- This new section is projected in the **theater** view. 
+- After 10 seconds of tapping the new section gets projected in the **theater** view. 
 
 ## User Interaction 2.0
 - The *new* sections get fed back to the **controller** view. 
