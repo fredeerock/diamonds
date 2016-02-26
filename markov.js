@@ -17,10 +17,8 @@ client.on("error", function (err) {
 //     });
 //     client.quit();
 // });
-
-var listName = "items";
 var dataObj = [];
-
+var listName = "items";
 
 // client.lindex(listName, 0, function (err, data) {
 // 	console.log(JSON.parse(data))
@@ -33,14 +31,34 @@ function handleLength(err, len){
 	for (i = 0; i < len; i++ ) {
 		client.lindex(listName, i, handleParsing)
 	}
-
+	// done();
 };
 
 function handleParsing(err, data) {
-	dataObj.push(JSON.parse(data)); 
+
+	// function jsonEscape(str)  {
+ //    	return str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t");
+	// }
+	// var data2 = '{"count" : 1, "stack" : "sometext\r\rdd"}';
+	// var data1 = eval('('+ jsonEscape(data2) +')');
+	// console.log(data1);
+
+	dataObj.push(JSON.parse(data));
 	console.log(dataObj);
-	// console.log(dataObj[1].content);
+	console.log(dataObj.length);
+
+	if (dataObj.length == 3) {
+		console.log("-------------")
+		console.log(dataObj[2].content)
+	}
+
+
 }
+
+// function done() {
+// 	console.log(i);
+// 	console.log(dob);
+// }
 
 // var rs = rita.RiString("The elephant took a bite!");
 // console.log(rs.features());
