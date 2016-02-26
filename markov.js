@@ -1,8 +1,5 @@
-var redis = require("redis"),
-    client = redis.createClient();
-
-var csv = require('csv-parser');
-var fs = require('fs');
+var redis = require("redis");
+var client = redis.createClient();
 
 var rita = require('rita');
 
@@ -22,24 +19,27 @@ client.on("error", function (err) {
 // });
 
 var listName = "items";
+var dataObj = [];
 
-client.ltrim(listName, -1, -2, handleTrim);
 
-function handleTrim() {
-	console.log("---Trimmed---");
-	fs.createReadStream('data/test.csv').pipe(csv()).on('data', handleRow).on('end', handleEnd);
-}
+// client.lindex(listName, 0, function (err, data) {
+// 	console.log(JSON.parse(data))
+// })
 
-function handleRow(data) {
-    console.log(data.title, "by", data.author)
-	client.rpush(listName, JSON.stringify(data), redis.print);
-}
+client.llen(listName, handleLength);
 
-function handleEnd() {
-	console.log('---Done reading file---');
-	client.llen(listName, function(err, len){console.log("---Total Number of Items:", len, "---")});
-	client.lindex(listName, 2, function (err, data) {console.log(data)})
-	client.quit();
+function handleLength(err, len){
+	console.log("---Total Number of Items:", len, "---");
+	for (i = 0; i < len; i++ ) {
+		client.lindex(listName, i, handleParsing)
+	}
+
+};
+
+function handleParsing(err, data) {
+	dataObj.push(JSON.parse(data)); 
+	console.log(dataObj);
+	// console.log(dataObj[1].content);
 }
 
 // var rs = rita.RiString("The elephant took a bite!");

@@ -9,7 +9,7 @@ client.on("error", function (err) {
     console.log("Error " + err);
 });
 
-// list name and data paths here
+// list name and data path here
 var listName = "items";
 var dataSet = "data/test.csv";
 
