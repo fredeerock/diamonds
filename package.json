@@ -18,6 +18,7 @@
   "author": "Derick Ostrneko, Jesse Allison, Vincent Cellucci",
   "license": "ISC",
   "dependencies": {
+    "csv-2-redis": "0.0.10",
     "csvtojson": "^0.5.2",
     "express": "^4.13.4",
     "node-osc": "^1.2.0",
