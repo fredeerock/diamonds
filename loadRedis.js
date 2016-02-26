@@ -11,7 +11,7 @@ client.on("error", function (err) {
 
 // list name and data path here
 var listName = "items";
-var dataSet = "data/test.csv";
+var dataSet = "data/corpus.csv";
 
 // clear the list
 client.ltrim(listName, -1, -2, handleTrim);
@@ -27,7 +27,7 @@ function handleRow(data) {
     console.log(data.title, "by", data.author)
 	client.rpush(listName, JSON.stringify(data, escape), redis.print);
 
-	// have to escape newlines
+	// remove line breaks and other escaped formatting
 	function escape (key, val) {
 	    if (typeof(val)!="string") return val;
 	    return val
@@ -53,6 +53,6 @@ function handleEnd() {
 		var totalItems = len
 		console.log("---Total Number of Items:", totalItems, "---");
 	});
-	client.lindex(listName, 2, function (err, data) {console.log(data)})
+	client.lindex(listName, 1, function (err, data) {console.log(data)})
 	client.quit();
 }
