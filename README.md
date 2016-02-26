@@ -27,3 +27,6 @@ A system for interactive poetry.
 
 ## Ideas
 - Maybe use redis to store content
+
+## FYI
+- cat ../../diamonds/data/test1.csv | ./csv-loader myset
