@@ -4,6 +4,8 @@ var redis = require("redis"),
 var csv = require('csv-parser');
 var fs = require('fs');
 
+var rita = require('rita');
+
 client.on("error", function (err) {
     console.log("Error " + err);
 });
@@ -19,27 +21,12 @@ client.on("error", function (err) {
 //     client.quit();
 // });
 
-// var listName = "items";
-// client.ltrim(listName, -1, -2, handleTrim);
-
-// function handleTrim(){
-// 	fs.createReadStream('data/test.csv').pipe(csv()).on('data', handleRow);
-// }
-
-// function handleRow(data) {
-//     console.log('Name: %s Age: %s', data.title, data.author)
-//   	client.rpush("new1", data.title, redis.print);
-
-// }
-
-//***
-
 var listName = "items";
 
 client.ltrim(listName, -1, -2, handleTrim);
 
 function handleTrim() {
-	console.log("trimmed");
+	console.log("---Trimmed---");
 	fs.createReadStream('data/test.csv').pipe(csv()).on('data', handleRow).on('end', handleEnd);
 }
 
@@ -49,18 +36,41 @@ function handleRow(data) {
 }
 
 function handleEnd() {
-	console.log('file read');
-	client.llen(listName, function(err, len){console.log(len)});
-		console.log('file read');
-
+	console.log('---Done reading file---');
+	client.llen(listName, function(err, len){console.log("---Total Number of Items:", len, "---")});
 	client.lindex(listName, 2, function (err, data) {console.log(data)})
 	client.quit();
 }
 
-//***
+// var rs = rita.RiString("The elephant took a bite!");
+// console.log(rs.features());
 
-// function handlePush (err, data) {
-// 	// redis.print;
-// 	console.log("pushing... ", count);
-// 	count++;
+// var lines, markov;
+// markov = new RiMarkov(4);
+
+// RiTa.loadString('../../data/kafka.txt', function (data1) {
+// 	RiTa.loadString('../../data/wittgenstein.txt', function (data2) {
+// 		markov.loadText(data1);
+// 		markov.loadText(data2);
+// 	});
+// });
+
+var rm = new rita.RiMarkov(3);
+// rm.loadText()
+
+// rm.loadText(theText);
+
+// sentences = rm.generateSentences(10);
+
+// for (int i = 0; i < sentences.length; i++) {
+// 	println(sentences[i]);
+// }
+
+// markov.loadText(data1);
+// markov.loadText(data2);
+
+// function generate() {
+// 	if (!markov.ready()) return;
+// 	lines = markov.generateSentences(10);
+// 	console.log(lines);
 // }
