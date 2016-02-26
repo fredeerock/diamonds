@@ -7,6 +7,11 @@ client.on("error", function (err) {
 
 
 
+var rita = require('rita');
+
+
+
+
 
 // ***************************************************
 //	NEXUS Node SERVER
@@ -155,7 +160,69 @@ io.sockets.on('connection', function (socket) {
 		console.log(socket.id + " tapped item: " + data);
 // handleParsing();
 		// LINDEX mylist 0
-		var mark = require("./markov.js");
+		
+// var mark = require("./markov.js");
+
+
+
+
+
+
+
+var dataObj = [];
+var listName = "items";
+var listLength = 2000;
+
+client.llen(listName, handleLength);
+
+function handleLength(err, len){
+	listLength = len;
+	console.log("---Total Number of Items:", len, "---");
+	for (i = 0; i < len; i++ ) {
+		client.lindex(listName, i, handleParsing)
+	}
+};
+
+function handleParsing(err, data) {
+
+	dataObj.push(JSON.parse(data));
+	// console.log(dataObj);
+	// console.log(dataObj.length);
+
+	if (dataObj.length == listLength) {
+		// console.log("-------------")
+		// console.log(dataObj[2].content)
+		console.log("list length:", listLength);
+
+		var markov = new rita.RiMarkov(4);
+
+		generate();
+
+		function generate() {
+			markov.loadText(dataObj[0].content);
+			markov.loadText(dataObj[1].content);
+			markov.loadText(dataObj[2].content);
+			console.log("markov sie:", markov.size());
+			if (!markov.ready()) return;
+			lines = markov.generateSentences(10);
+			linesJoined = lines.join(' ');
+			client.lpush("markov", linesJoined, redis.print);
+			console.log(linesJoined);
+		}
+
+
+	}
+
+}
+
+
+
+
+
+
+
+
+
 
 		client.lindex("markov", 0, function (err, data) {
 			io.sockets.emit('chat', data);

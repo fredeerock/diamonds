@@ -236,6 +236,7 @@ I start talking about failure
 
 			$('p').click(function (e) {
 				$(e.target).toggleClass('underline');
+				socket.emit('item', "booom");
 			});
 
 			$('button').click(function() {
