@@ -3,32 +3,22 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Causeway | Theater</title>
-	<link rel="stylesheet" href="styles/theater.css">
+	<link rel="stylesheet" href="../styles/theater.css">
 	<link href='http://fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
 	<script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 
 	<div class="sec sw">
-			<h1>Causeway</h1>
-			<p>Words | <strong>Vincent A. Cellucci</strong></p>
-			<p>Audio | <strong>Jesse Allison</strong></p>
-			<p>Visuals | <strong>Derick Ostrenko</strong></p>
-			<br>
-			<p><em>Tapping is the new snapping. Navigate your mobile device to the URL below to participate:</em></p>
-			<h2>http://emdm.io/m</h2>
-			<p>If you need WiFi use...<br>
-			Network: eduroam<br>
-			Username: digitalart@lsu.edu<br>
-			Password: Digital328Art</p>
+
 	</div>
 
 <div id="causeway-text"></div>
 
 	<script>
-		var socket = io.connect('http://emdm.io/', { path: '/sio/socket.io' });
+		// var socket = io.connect('http://emdm.io/', { path: '/sio/socket.io' });
  		// var socket = io.connect('http://emdm.io/sio');
-		//var socket = io.connect('127.0.0.1:8001/');
+		var socket = io.connect('127.0.0.1:8000/');
  		socket.emit('addme', {name: "theater"});
 		
 		socket.on('chat', function(data) {
@@ -84,7 +74,7 @@
 
 		window.onload = function() {
 			var xhr= new XMLHttpRequest();
-			xhr.open('GET', 'data/causeway.html', true);
+			xhr.open('GET', '../data/score.txt', true);
 			xhr.onreadystatechange= function() {
 			    if (this.readyState!==4) return;
 			    if (this.status!==200) return; // or whatever error handling you want
@@ -132,7 +122,7 @@
 	</script>
 
 	<video autoplay muted loop id="bgvid">
-	    <source src="data/therm.mp4" type="video/mp4">
+	    <source src="../data/therm.mp4" type="video/mp4">
 	</video>
 	
 </body>
