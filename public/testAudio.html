@@ -18,20 +18,31 @@
 		// Add Chords, Progression, feedback, comb filtering, shimmer!
 		
 		var self = this;
+		
+		tone = new Tone();
+		pitchCollection = [55, 57, 59, 61, 62, 64, 66, 67, 68, 69, 71, 73, 75, 76, 78, 80, 82, 83];
+		
+		pitch = pitchCollection[Math.floor(Math.random() * (pitchCollection.length))];
 	
 		function toneSetup() {
 			// var ctx = meSpeak.getAudioContext();
 			// Tone.setContext(ctx);		// only works after meSpeak has loaded...
+			Tone.startMobile();
 			
 			self.synth = new Tone.SimpleSynth().toMaster();
 
 			//play a middle c for the duration of an 8th note
-			synth.triggerAttackRelease("C4", "8n");
+			self.synth.triggerAttackRelease("C4", "8n",{} , 0.25);
 
 			self.gainy = new Tone.Gain().toMaster();
-			self.filt = new Tone.Filter(300, "bandpass").connect(self.gainy);
+			self.filt2 = new Tone.Filter(tone.midiToNote(pitch+12), "bandpass").connect(self.gainy);
+			self.filt = new Tone.Filter(tone.midiToNote(pitch+12), "bandpass").connect(self.filt2);
 			self.filt.Q.value = 9;
+			self.filt.gain.value = 40;
+			self.filt2.Q.value = 2;
+			self.filt2.gain.value = 40;
 			self.ns = new Tone.Noise('pink').connect(self.filt);
+			self.gainy.gain.value = 10.;
 			
 			meSpeak.setAudioContext(Tone.context);
 			meSpeak.speakToNode(self.filt);
@@ -118,6 +129,11 @@
 							if(typeof position === UNDEFINED){ return FALSE; }
 							
 							// console.log("Speak: ", caption_array[position]);
+							pitch = pitchCollection[Math.floor(Math.random() * (pitchCollection.length))];
+							var freq = tone.midiToNote(pitch+12);
+							self.filt.frequency.value = (freq);
+							self.filt2.frequency.value = (freq);
+							self.synth.triggerAttackRelease(freq, "4n",{} , 0.15);
 							meSpeak.speak(caption_array[position]);
 						}
 					};
@@ -180,6 +196,7 @@
 </head>
 <body>
 
+<button script="Tone.startMobile();">Start</button>
 
 <div id="transcript">
 <pre>
