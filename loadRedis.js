@@ -11,7 +11,7 @@ client.on("error", function (err) {
 
 // list name and data path here
 var listName = "items";
-var dataSet = "data/test.csv";
+var dataSet = "data/corpus.csv";
 
 // clear the list
 client.ltrim(listName, -1, -2, handleTrim);
@@ -25,7 +25,25 @@ function handleTrim() {
 // push each row into redis as a string
 function handleRow(data) {
     console.log(data.title, "by", data.author)
-	client.rpush(listName, JSON.stringify(data), redis.print);
+	client.rpush(listName, JSON.stringify(data, escape), redis.print);
+
+	// remove line breaks and other escaped formatting
+	function escape (key, val) {
+	    if (typeof(val)!="string") return val;
+	    return val
+	      // .replace(/[\"]/g, '\\"')
+	      // .replace(/[\\]/g, '\\\\')
+	      .replace(/[\']/g, '')
+	      .replace(/[\"]/g, '')
+	      .replace(/[\/]/g, '\\/')
+	      .replace(/[\b]/g, '\\b')
+	      .replace(/[\f]/g, '\\f')
+	      .replace(/[\n]/g, '\\n')
+	      // .replace(/[\r]/g, '\\r')
+	      .replace(/[\r]/g, ' ')
+	      .replace(/[\t]/g, '\\t')
+	    ; 
+	}
 }
 
 // when done reading the file display total number of items and quit redis connection
@@ -35,6 +53,6 @@ function handleEnd() {
 		var totalItems = len
 		console.log("---Total Number of Items:", totalItems, "---");
 	});
-	// client.lindex(listName, 2, function (err, data) {console.log(data)})
+	client.lindex(listName, 1, function (err, data) {console.log(data)})
 	client.quit();
 }

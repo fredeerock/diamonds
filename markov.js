@@ -7,70 +7,64 @@ client.on("error", function (err) {
     console.log("Error " + err);
 });
 
+var sio = require('socket.io');
+
 // client.set("string key", "string val", redis.print);
 // client.hset("hash key", "hashtest 1", "some value", redis.print);
 // client.hset(["hash key", "hashtest 2", "some other value"], redis.print);
-// client.hkeys("hash key", function (err, replies) {
+
+// client.llen("items", function (err, replies) {
 //     console.log(replies.length + " replies:");
 //     replies.forEach(function (reply, i) {
 //         console.log("    " + i + ": " + reply);
 //     });
-//     client.quit();
+    // client.quit();
 // });
 
-var listName = "items";
 var dataObj = [];
-
-
-// client.lindex(listName, 0, function (err, data) {
-// 	console.log(JSON.parse(data))
-// })
+var listName = "items";
+var listLength = 2000;
 
 client.llen(listName, handleLength);
 
 function handleLength(err, len){
+	listLength = len;
 	console.log("---Total Number of Items:", len, "---");
 	for (i = 0; i < len; i++ ) {
 		client.lindex(listName, i, handleParsing)
 	}
-
 };
 
 function handleParsing(err, data) {
-	dataObj.push(JSON.parse(data)); 
-	console.log(dataObj);
-	// console.log(dataObj[1].content);
+
+	dataObj.push(JSON.parse(data));
+	// console.log(dataObj);
+	// console.log(dataObj.length);
+
+	if (dataObj.length == listLength) {
+		// console.log("-------------")
+		// console.log(dataObj[2].content)
+		console.log("list length:", listLength);
+
+		var markov = new rita.RiMarkov(4);
+
+		generate();
+
+		function generate() {
+			markov.loadText(dataObj[0].content);
+			markov.loadText(dataObj[1].content);
+			markov.loadText(dataObj[2].content);
+			console.log("markov sie:", markov.size());
+			if (!markov.ready()) return;
+			lines = markov.generateSentences(10);
+			linesJoined = lines.join(' ');
+			client.lpush("markov", linesJoined, redis.print);
+			console.log(linesJoined);
+		}
+
+
+	}
+
 }
 
-// var rs = rita.RiString("The elephant took a bite!");
-// console.log(rs.features());
 
-// var lines, markov;
-// markov = new RiMarkov(4);
-
-// RiTa.loadString('../../data/kafka.txt', function (data1) {
-// 	RiTa.loadString('../../data/wittgenstein.txt', function (data2) {
-// 		markov.loadText(data1);
-// 		markov.loadText(data2);
-// 	});
-// });
-
-var rm = new rita.RiMarkov(3);
-// rm.loadText()
-
-// rm.loadText(theText);
-
-// sentences = rm.generateSentences(10);
-
-// for (int i = 0; i < sentences.length; i++) {
-// 	println(sentences[i]);
-// }
-
-// markov.loadText(data1);
-// markov.loadText(data2);
-
-// function generate() {
-// 	if (!markov.ready()) return;
-// 	lines = markov.generateSentences(10);
-// 	console.log(lines);
-// }
