@@ -248,6 +248,7 @@ io.sockets.on('connection', function (socket) {
 		console.log(linesJoined);
 		
 
+
 		client.lindex("markov", 0, function (err, data) {
 			// io.sockets.emit('chat', data);
 			
