@@ -3,6 +3,10 @@
 // To start server with Xtra RAM - node --max_old_space_size=4096 app.js
 
 
+// Todo: Incorporate Node Cluster
+// Todo: Clean UP!
+
+
 var redis = require("redis");
 var client = redis.createClient();
 
@@ -12,15 +16,17 @@ client.on("error", function (err) {
 
 
 
+
+// *******	RITA Markov Setup   ********
 var rita = require('rita');
-
-
 
 var dataObj = [];
 var listName = "items";
 var listLength = 2000;
 
 var markov = new rita.RiMarkov(4);
+var markovArray = [];
+var markovArrayCount = 0;
 
 
 client.llen(listName, handleLength);
@@ -28,20 +34,37 @@ client.llen(listName, handleLength);
 function handleLength(err, len){
 	listLength = len;
 	console.log("---Total Number of Items:", len, "---");
+	
+	//	All 2050 Ted Talk Transcripts
 	for (i = 0; i < len; i++ ) {
-		client.lindex(listName, i, handleParsing);
+		client.lindex(listName, i, handleMarkovParsing);
 	}
+	
+	/* Ted Transcripts in groups of 10
+	for (var i = 0; i < len; i = i + 10) {
+			markovArray[j] = new rita.RiMarkov(4);
+			client.lindex(listName, i, handleMarkovArrayParsing);
+	}
+	*/
 }
 
-function handleParsing(err, data) {
-
-	// dataObj.push(JSON.parse(data));
-	// console.log(dataObj);
-	// console.log(dataObj.length);
+function handleMarkovParsing(err, data) {
+	/*	If you want to store an array of the collected data
+		dataObj.push(JSON.parse(data));
+		console.log(dataObj);
+		console.log(dataObj.length);
+	*/
 	
 	markov.loadText(JSON.parse(data).content);
 	console.log("Loading: ", JSON.parse(data).title);
 
+}
+
+function handleMarkovArrayParsing(err, data) {
+	var markovArrayIndex = Math.floor(markovArrayCount/10.);
+	markovArray[markovArrayIndex].loadText(JSON.parse(data).content);
+	console.log("Loading: ", JSON.parse(data).title);
+	markovArrayCount++;
 }
 
 
@@ -66,34 +89,49 @@ var app = express();
 
 app.use(express.static(__dirname + '/public'));
 
+
+
+
 // ***************************************************
 //	OSC Setup for sending (and receiving) OSC (to Max)
 
 var osc = require('node-osc');
 
-// oscServer is used for receiving osc messages (from Max)
-var oscServer = new osc.Server(7746, '167.96.127.8');
+var oscReceiverIP = '167.96.127.8';
 
-oscServer.on("message", function (msg, rinfo) {
-	// console.log("OSC message:");
-	// console.log(msg);
-	// Setup messages to receive here //
-	if(msg[0] = "/goToSection") {
-		currentSection = msg[1];
-		shareSection(currentSection);
-	}
-});
+	// oscReceiver is used for receiving osc messages (from Max, and friends!)
+var oscReceiver = new osc.Server(7746, oscReceiverIP);
 
-// oscClient is used to send osc messages (to Max)
-var oscClient = new osc.Client('167.96.127.8', 7745);
+	oscReceiver.on("message", function (msg, rinfo) {
+		// console.log("OSC message:");
+		// console.log(msg);
+		
+		// Setup messages to receive here //
+		if(msg[0] = "/goToSection") {
+			currentSection = msg[1];
+			shareSection(currentSection);
+		}
+		
+	});
+
+		// oscSend is used to send osc messages (to Max, and freinds!)
+	var oscSend = new osc.Client(oscReceiverIP, 7745);
+
+//
+// ***************************************************
+
+
 
 // ***************************************************
 // server is the node server (web app via express)
 // this code launches the server on port 80 and switches the user id away from sudo
 // apparently this makes it more secure - if something goes awry it isn't running under the superuser.
 
+var serverPort = 8000;
+// var serverPort = 80;
+
 var server = http.createServer(app)
-	.listen(8000, function(err) {
+	.listen(serverPort, function(err) {
 		if (err) return cb(err);
 
 		// Find out which user used sudo through the environment variable
@@ -107,10 +145,12 @@ var server = http.createServer(app)
 // start socket.io listening on the server
 var io = sio.listen(server);
 
+
+
 // ***************************************************
 // Global Variables!
 
-var ioClients = [];		// list of clients who have logged in.
+var ioClients = [];		// list of clients who have logged in.  // FIXME: not removing properly
 var currentSection = 0;		// current section.
 var theaterID;
 var conrollerID;
@@ -142,53 +182,53 @@ io.sockets.on('connection', function (socket) {
 		}
 
 		socket.username = username; // allows the username to be retrieved anytime the socket is used
-		// Can add any other pertinent details to the socket to be retrieved later
+				// Can add any other pertinent details to the socket to be used later
 		socket.userLocation = userLocation;
 		socket.userColor = userColor;
 		socket.userNote = userNote;
-		// .emit to send message back to caller.
+		
+				// .emit to send message back to caller.
 		socket.emit('chat', 'SERVER: You have connected. Hello: ' + username + " " + socket.id + 'Color: ' + socket.userColor);
-		// .broadcast to send message to all sockets.
+				// .broadcast to send message to all sockets.
 		//socket.broadcast.emit('chat', 'SERVER: A new user has connected: ' + username + " " + socket.id + 'Color: ' + socket.userColor);
-		// socket.emit('bump', socket.username, "::dude::");
+		
 		var title = getSection(currentSection);
 		
 		if(username == "a_user") {
 			console.log("Hello:", socket.username, "currentSection:", currentSection, "id:", socket.id, "userColor:", socket.userColor, "userLocation:", socket.userLocation, "userNote:", socket.userNote);
 		}
-
+				// Set Section to the current one.
 		socket.emit('setSection', {sect: currentSection, title: title});
-		// io.sockets.emit('setSection', {sect: sect, title: title});
+
 		if(username == "a_user") {
-			oscClient.send('/causeway/registerUser', socket.id, socket.userColor, socket.userLocation[0],socket.userLocation[1], socket.userNote);
+			// oscSend.send('/causeway/registerUser', socket.id, socket.userColor, socket.userLocation[0],socket.userLocation[1], socket.userNote);
 		}
 	});
 
 	socket.on('disconnect', function() {
 		// ioClients.remove(socket.id);	// FIXME: Remove client if they leave
-		io.sockets.emit('chat', 'SERVER: ' + socket.id + ' has left the building');
+		// io.sockets.emit('chat', 'SERVER: ' + socket.id + ' has left the building');
 	});
 
+				// Transmit to everyone who is connected //
 	socket.on('sendchat', function(data) {
-		// Transmit to everyone who is connected //
 		io.sockets.emit('chat', socket.username, data);
 	});
-
+	
+				// Send to all other users connected // 
 	socket.on('tap', function(data) {
-		console.log("Data: ", data.inspect);
-		oscClient.send('/tapped', 1);
+		// console.log("Data: ", data.inspect);
+		// oscSend.send('/tapped', 1);
 		socket.broadcast.emit('tapped', socket.username, 1);
 	});
 
-	socket.on('shareToggle', function(data) {
-		socket.broadcast.emit('setSharedToggle', data);
-	});
-
+				
 	socket.on('location', function(data) {
 		if(data) {
-			oscClient.send('/location', data[0], data[1]);
+			// oscSend.send('/location', data[0], data[1]);
 		}
 	});
+
 
 	socket.on('item' , function(data) {
 		console.log(socket.id + " tapped item: " + data);
@@ -201,118 +241,44 @@ io.sockets.on('connection', function (socket) {
 		//markov.loadText(dataObj[0].content);
 
 		console.log("markov size:", markov.size());
-		if (!markov.ready()) return;
+		if (!markov.ready()) return;		// Discontinue if markov is not ready
 		lines = markov.generateSentences(10);
 		linesJoined = lines.join(' ');
 		client.lpush("markov", linesJoined, redis.print);
 		console.log(linesJoined);
-
-
-
-
-// var dataObj = [];
-// var listName = "items";
-// var listLength = 2000;
-// 
-// client.llen(listName, handleLength);
-// 
-// function handleLength(err, len){
-// 	listLength = len;
-// 	console.log("---Total Number of Items:", len, "---");
-// 	for (i = 0; i < len; i++ ) {
-// 		client.lindex(listName, i, handleParsing)
-// 	}
-//	};
-
-// function handleParsing(err, data) {
-// 
-// 	dataObj.push(JSON.parse(data));
-// 	// console.log(dataObj);
-// 	// console.log(dataObj.length);
-// 
-// 	if (dataObj.length == listLength) {
-// 		// console.log("-------------")
-// 		// console.log(dataObj[2].content)
-// 		console.log("list length:", listLength);
-// 
-// 		var markov = new rita.RiMarkov(4);
-// 
-// 		generate();
-// 
-// 		function generate() {
-// 			markov.loadText(dataObj[0].content);
-// 			markov.loadText(dataObj[1].content);
-// 			markov.loadText(dataObj[2].content);
-// 			console.log("markov sie:", markov.size());
-// 			if (!markov.ready()) return;
-// 			lines = markov.generateSentences(10);
-// 			linesJoined = lines.join(' ');
-// 			client.lpush("markov", linesJoined, redis.print);
-// 			console.log(linesJoined);
-// 		}
-// 
-// 
-// 	}
-
-
-
-
-
-
-
-
-
-
-
+		
 
 		client.lindex("markov", 0, function (err, data) {
-			io.sockets.emit('chat', data);
-			console.log(data);
+			// io.sockets.emit('chat', data);
+			
+			// console.log(data);
 		})
 
-
-
-		// TODO: Take out all the socket.broadcast.emits.
-		// socket.broadcast.emit('chat', socket.id + " : " + data, 1);
-
-		// diamonds > Took this out...
-		// if(io.sockets.connected[theaterID]!== null) {
-		// 	io.sockets.connected[theaterID].emit('itemback', {phrase: data, color: socket.userColor}, 1);
-		// }
+		// diamonds > Sending to the Theatre if connected
+		if(io.sockets.connected[theaterID]!== null) {
+			io.sockets.connected[theaterID].emit('itemback', {phrase: data, color: socket.userColor}, 1);
+		}
 
 		// socket.broadcast.emit('itemback', {phrase: data, color: socket.userColor}, 1);
-		oscClient.send('/causeway/phrase/number', socket.id, data);
+		// oscSend.send('/causeway/phrase/number', socket.id, data);
 		
 	});
 
+
+					// Functions to send on to Max //
 	socket.on('triggerCauseway', function(data) {
-		oscClient.send('/causeway/triggerCauseway', socket.id);
+		// oscSend.send('/causeway/triggerCauseway', socket.id);
 	});
 
 	socket.on('triggerPitch', function(data) {
-		oscClient.send('/causeway/triggerPitch', socket.id);
+		// oscSend.send('/causeway/triggerPitch', socket.id);
 	});
 
 	socket.on('slider', function(data) {
-		console.log("slider! " + data);
-		oscClient.send('/slider', socket.username, data);
+		// console.log("slider! " + data);
+		// oscSend.send('/slider', socket.username, data);
 	});
 
-	// Return random user name
-	socket.on('getSomebody', function(data) {
-		console.log("Get Somebody! ");
-
-		var user = getNextUser();
-		// Make sure you don't get yourself
-		if(user.username == socket.username || user.username == null) {
-			user = getNextUser();
-			if(user.username == socket.username || user.username == null) {
-				socket.emit("somebodyToYou","Somebody");
-			}
-		} else {
-			socket.emit("somebodyToYou",user.username);
-		}
-	});
 
 	socket.on('section', function(data) {
 		console.log("Section is now: "+ data);
@@ -324,25 +290,18 @@ io.sockets.on('connection', function (socket) {
 	// Functions for handling stuff
 	// **** SECTIONS ****
 
-	var sectionTitles = ["Welcome", "Preface", "Section 1", "Section 2", "Section 3", 
-		"Section 4", "Section 5", "Section 6", "Section 7", "Section 8", "Section 9", 
-		"Section 10", "Section 11", "Section 12", "Section 13", "Section 14", "Section 15",  
-		"Section 16", "Section 17", "Section 18", "Section 19", "Section 20", "Section 21", 
-		"Section 22", "Section 23", "Section 24", "Section 25", "Section 26", "Section 27", 
-		"Section 28", "Section 29", "Section 30", "Section 31", "Section 32", "Section 33", 
-		"End"];
+	var sectionTitles = ["Welcome", "Markov", "Diamonds in Distopia", "Markov", "for a minute", "End"];
 
-	// Todo: Add sections to correspond to organ interactions
-	// sendSection(currentSection);	 // Sets everyone's section
+				// sendSection(currentSection);	 // Sets everyone's section
 	sendSection = function (sect) {
 		var title = getSection(sect);
 		io.sockets.emit('setSection', {sect: sect, title: title});
-		// oscClient.send('/setSection', sect, title);
-		oscClient.send('/causeway/currentSection', sect);
+		// oscSend.send('/setSection', sect, title);
+		oscSend.send('/causeway/currentSection', sect);
 
 	};
 
-	// Section shared from Max to UIs
+				// Section shared from Max to UIs
 	shareSection = function(sect) {
 		var title = getSection(sect);
 		io.sockets.emit('setSection', sect, title);
@@ -366,6 +325,24 @@ io.sockets.on('connection', function (socket) {
 		
 		return title;
 	};
+
+
+				// Return random connected user name //
+	socket.on('getSomebody', function(data) {
+		console.log("Get Somebody! ");
+
+		var user = getNextUser();
+		// Make sure you don't get yourself
+		if(user.username == socket.username || user.username == null) {
+			user = getNextUser();
+			if(user.username == socket.username || user.username == null) {
+				socket.emit("somebodyToYou","Somebody");
+			}
+		} else {
+			socket.emit("somebodyToYou",user.username);
+		}
+	});
+
 
 	// pick a random user from those still connected and return the user
 	getRandomUser = function() {
