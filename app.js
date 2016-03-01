@@ -248,7 +248,6 @@ io.sockets.on('connection', function (socket) {
 		console.log(linesJoined);
 		
 
-
 		client.lindex("markov", 0, function (err, data) {
 			// io.sockets.emit('chat', data);
 			
@@ -257,7 +256,7 @@ io.sockets.on('connection', function (socket) {
 
 		// diamonds > Sending to the Theatre if connected
 		if(io.sockets.connected[theaterID]!== null) {
-			io.sockets.connected[theaterID].emit('itemback', {phrase: data, color: socket.userColor}, 1);
+		//	io.sockets.connected[theaterID].emit('itemback', {phrase: data, color: socket.userColor}, 1);
 		}
 
 		// socket.broadcast.emit('itemback', {phrase: data, color: socket.userColor}, 1);
