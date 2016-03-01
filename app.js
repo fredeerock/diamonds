@@ -132,7 +132,7 @@ io.sockets.on('connection', function (socket) {
 
 	socket.on('disconnect', function() {
 		// ioClients.remove(socket.id);	// FIXME: Remove client if they leave
-		io.sockets.emit('chat', 'SERVER: ' + socket.id + ' has left the building');
+		// io.sockets.emit('chat', 'SERVER: ' + socket.id + ' has left the building');
 	});
 
 	socket.on('sendchat', function(data) {
@@ -204,7 +204,7 @@ function handleParsing(err, data) {
 			markov.loadText(dataObj[2].content);
 			console.log("markov sie:", markov.size());
 			if (!markov.ready()) return;
-			lines = markov.generateSentences(10);
+			lines = markov.generateSentences(5);
 			linesJoined = lines.join(' ');
 			client.lpush("markov", linesJoined, redis.print);
 			console.log(linesJoined);

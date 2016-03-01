@@ -18,7 +18,9 @@
 	<script>
 		// var socket = io.connect('http://emdm.io/', { path: '/sio/socket.io' });
  		// var socket = io.connect('http://emdm.io/sio');
-		var socket = io.connect('127.0.0.1:8000/');
+		// var socket = io.connect('127.0.0.1:8000/');
+		var socket = io.connect('167.96.65.182:8000');
+
  		socket.emit('addme', {name: "theater"});
 		
 		socket.on('chat', function(data) {
