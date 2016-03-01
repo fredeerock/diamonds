@@ -1,3 +1,8 @@
+//
+//
+// To start server with Xtra RAM - node --max_old_space_size=4096 app.js
+
+
 var redis = require("redis");
 var client = redis.createClient();
 
@@ -9,6 +14,35 @@ client.on("error", function (err) {
 
 var rita = require('rita');
 
+
+
+var dataObj = [];
+var listName = "items";
+var listLength = 2000;
+
+var markov = new rita.RiMarkov(4);
+
+
+client.llen(listName, handleLength);
+
+function handleLength(err, len){
+	listLength = len;
+	console.log("---Total Number of Items:", len, "---");
+	for (i = 0; i < len; i++ ) {
+		client.lindex(listName, i, handleParsing);
+	}
+}
+
+function handleParsing(err, data) {
+
+	// dataObj.push(JSON.parse(data));
+	// console.log(dataObj);
+	// console.log(dataObj.length);
+	
+	markov.loadText(JSON.parse(data).content);
+	console.log("Loading: ", JSON.parse(data).title);
+
+}
 
 
 
@@ -163,57 +197,65 @@ io.sockets.on('connection', function (socket) {
 		
 // var mark = require("./markov.js");
 
+		//  LOAD Talk from submitted word
+		//markov.loadText(dataObj[0].content);
+
+		console.log("markov size:", markov.size());
+		if (!markov.ready()) return;
+		lines = markov.generateSentences(10);
+		linesJoined = lines.join(' ');
+		client.lpush("markov", linesJoined, redis.print);
+		console.log(linesJoined);
 
 
 
 
+// var dataObj = [];
+// var listName = "items";
+// var listLength = 2000;
+// 
+// client.llen(listName, handleLength);
+// 
+// function handleLength(err, len){
+// 	listLength = len;
+// 	console.log("---Total Number of Items:", len, "---");
+// 	for (i = 0; i < len; i++ ) {
+// 		client.lindex(listName, i, handleParsing)
+// 	}
+//	};
+
+// function handleParsing(err, data) {
+// 
+// 	dataObj.push(JSON.parse(data));
+// 	// console.log(dataObj);
+// 	// console.log(dataObj.length);
+// 
+// 	if (dataObj.length == listLength) {
+// 		// console.log("-------------")
+// 		// console.log(dataObj[2].content)
+// 		console.log("list length:", listLength);
+// 
+// 		var markov = new rita.RiMarkov(4);
+// 
+// 		generate();
+// 
+// 		function generate() {
+// 			markov.loadText(dataObj[0].content);
+// 			markov.loadText(dataObj[1].content);
+// 			markov.loadText(dataObj[2].content);
+// 			console.log("markov sie:", markov.size());
+// 			if (!markov.ready()) return;
+// 			lines = markov.generateSentences(10);
+// 			linesJoined = lines.join(' ');
+// 			client.lpush("markov", linesJoined, redis.print);
+// 			console.log(linesJoined);
+// 		}
+// 
+// 
+// 	}
 
 
-var dataObj = [];
-var listName = "items";
-var listLength = 2000;
 
-client.llen(listName, handleLength);
-
-function handleLength(err, len){
-	listLength = len;
-	console.log("---Total Number of Items:", len, "---");
-	for (i = 0; i < len; i++ ) {
-		client.lindex(listName, i, handleParsing)
-	}
-};
-
-function handleParsing(err, data) {
-
-	dataObj.push(JSON.parse(data));
-	// console.log(dataObj);
-	// console.log(dataObj.length);
-
-	if (dataObj.length == listLength) {
-		// console.log("-------------")
-		// console.log(dataObj[2].content)
-		console.log("list length:", listLength);
-
-		var markov = new rita.RiMarkov(4);
-
-		generate();
-
-		function generate() {
-			markov.loadText(dataObj[0].content);
-			markov.loadText(dataObj[1].content);
-			markov.loadText(dataObj[2].content);
-			console.log("markov sie:", markov.size());
-			if (!markov.ready()) return;
-			lines = markov.generateSentences(5);
-			linesJoined = lines.join(' ');
-			client.lpush("markov", linesJoined, redis.print);
-			console.log(linesJoined);
-		}
-
-
-	}
-
-}
 
 
 
@@ -230,6 +272,7 @@ function handleParsing(err, data) {
 		})
 
 
+
 		// TODO: Take out all the socket.broadcast.emits.
 		// socket.broadcast.emit('chat', socket.id + " : " + data, 1);
 
@@ -240,6 +283,7 @@ function handleParsing(err, data) {
 
 		// socket.broadcast.emit('itemback', {phrase: data, color: socket.userColor}, 1);
 		oscClient.send('/causeway/phrase/number', socket.id, data);
+		
 	});
 
 	socket.on('triggerCauseway', function(data) {

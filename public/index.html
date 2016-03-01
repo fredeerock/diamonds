@@ -195,6 +195,7 @@ I start talking about failure
 
 </p>
 		<button type="button">Submit</button>
+		
 
 		<!-- <p>sakdjf lsadfjh lsadjflks djflkjs </p> -->
 		<!-- <div id="causeway-text"></div> -->
@@ -309,17 +310,17 @@ setInterval(updateGradient,10);
 				socket.emit('item', "booom");
 			});
 
-			$('button').click(function() {
-				var selected = [];
-				$('span.underline').each(function() {
-					selected.push($(this).text());
-				});
-				
-				alert('Selected: ' + selected.join(','));
-				socket.emit('item', selected.join(','));
-
-				});
-			});
+			// $('button1').click(function() {
+			// 	var selected = [];
+			// 	$('span.underline').each(function() {
+			// 		selected.push($(this).text());
+			// 	});
+			// 	
+			// 	alert('Selected: ' + selected.join(','));
+			// 	socket.emit('item', selected.join(','));
+			// 
+			// 	});
+			// });
 
 			function registerWithServer() {
 				// Tone.startMobile();
@@ -382,7 +383,7 @@ setInterval(updateGradient,10);
 				xhr.onreadystatechange= function() {
 				    if (this.readyState!==4) return;
 				    if (this.status!==200) return;
-				    document.getElementById("causeway-text").innerHTML= this.responseText;
+				    // document.getElementById("causeway-text").innerHTML= this.responseText;
 				    addEvents();
 				};
 				xhr.send();
@@ -460,6 +461,8 @@ setInterval(updateGradient,10);
 			// var causeSound = new CauseSound();
 			
 		</script>
+		
+			<button type="button" script=" for (i=0;i<100;i++){socket.emit('item', 'booom');};">Test 100</button>
 
 	</body>
 </html>
