@@ -25,7 +25,8 @@ function handleTrim() {
 // push each row into redis as a string
 function handleRow(data) {
     console.log(data.title, "by", data.author)
-	client.rpush(listName, JSON.stringify(data, escape), redis.print);
+	// client.rpush(listName, JSON.stringify(data, escape), redis.print);
+	client.sadd(listName+"set", JSON.stringify(data, escape));
 
 	// remove line breaks and other escaped formatting
 	function escape (key, val) {
@@ -53,6 +54,6 @@ function handleEnd() {
 		var totalItems = len
 		console.log("---Total Number of Items:", totalItems, "---");
 	});
-	client.lindex(listName, 1, function (err, data) {console.log(data)})
+	// client.lindex(listName, 1, function (err, data) {console.log(data)})
 	client.quit();
 }

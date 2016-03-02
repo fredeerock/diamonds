@@ -20,13 +20,10 @@ var redisAdapter = require('socket.io-redis');
 
 var port = process.env.PORT || 8000;
 var workers = process.env.WORKERS || require('os').cpus().length;
-
 var redisUrl = process.env.REDISTOGO_URL || 'redis://127.0.0.1:6379';
-
 
 var app = express();
 app.use(express.static(__dirname + '/public'));
-
 
 // app.get('/', function(req, res) {
 //   res.sendfile('index.html');
@@ -60,7 +57,7 @@ if(cluster.isMaster) {
 	
 	/*   All this code is to populate a Markov Model either the full one, or by grouping 10 talks at a time into an array.  Haven't verified that the array version works.  
 	// 
-	
+
 	
 	var redis = require("redis");
 	var client = redis.createClient();
@@ -323,6 +320,57 @@ if(cluster.isMaster) {
 
 		socket.on('item' , function(data) {
 			console.log(socket.id + " tapped item: " + data);
+			// client.sscan(0, );
+			//sscan itemsset 0 match *Rwanda* count 2050
+			
+			var cursor = '0';
+			sscan(data);
+			function sscan(data) {
+			    client.sscan(
+			        "itemsset",
+			        cursor,
+			        'MATCH', '*'+data+'*',
+			        'COUNT', '10',
+			        function(err, res) {
+			            if (err) throw err;
+
+			            // Update the cursor position for the next scan
+			            cursor = res[0];
+			            // get the SCAN result for this iteration
+			            var keys = res[1];
+
+			            // Remember: more or less than COUNT or no keys may be returned
+			            // See http://redis.io/commands/scan#the-count-option
+			            // Also, SCAN may return the same key multiple times
+			            // See http://redis.io/commands/scan#scan-guarantees
+			            // Additionally, you should always have the code that uses the keys
+			            // before the code checking the cursor.
+			            if (keys.length > 0) {
+			                console.log('Array of matching keys', keys);
+			            }
+
+			            // It's important to note that the cursor and returned keys
+			            // vary independently. The scan is never complete until redis
+			            // returns a non-zero cursor. However, with MATCH and large
+			            // collections, most iterations will return an empty keys array.
+
+			            // Still, a cursor of zero DOES NOT mean that there are no keys.
+			            // A zero cursor just means that the SCAN is complete, but there
+			            // might be one last batch of results to process.
+
+			            // From <http://redis.io/commands/scan>:
+			            // 'An iteration starts when the cursor is set to 0,
+			            // and terminates when the cursor returned by the server is 0.'
+			            if (cursor === '0') {
+			                return console.log('Iteration complete');
+			            }
+
+			            return sscan();
+			        }
+			    );
+			}
+
+			//sscan itemsset 0 match *Rwanda* count 2050
 			// handleParsing();
 			// LINDEX mylist 0
 
@@ -330,7 +378,7 @@ if(cluster.isMaster) {
 			//markov.loadText(dataObj[0].content);
 			
 			// ********* !!!!!!!!  FIXME: Once the array is loaded in redis, something like this will pull it back out for usage.
-			markov = client.LINDEX("markovArray", 0);
+			var markovItem = client.LINDEX("markovArray", 0);
 			// ********* !!!!!!!!    
 
 			// console.log("markov size:", markov.size());

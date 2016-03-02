@@ -13,7 +13,7 @@ body{
 span.underline {
   /*display: inline;*/
   /*position: relative;*/
-  font: 15px Helvetica, Sans-Serif;
+  /*font: 15px Helvetica, Sans-Serif;*/
   /*letter-spacing: -.25px;*/
   color: rgba(0,0,255,0.5); 
 }
@@ -22,18 +22,11 @@ span {
     cursor: pointer;
 }
 
-body {
+pre {
 	margin: 0;
-	/*padding-left: 1.0em;*/
-/*	display: flex;
-	align-items: center;
-	justify-content: center;*/
 	font-family: 'Vollkorn', serif;
   color: rgba(255, 255, 255, 0.75);
-  /*color(white);*/
 	font-size: 1.0em;
-	/*overflow: hidden;*/
-	/*position: fixed;*/
 }
 
 #causeway-text {

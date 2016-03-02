@@ -282,9 +282,9 @@ $(function () {
 	$('p').html(modText);
 
 	$('p').click(function (e) {
-		// console.log("text:",$(e.target).text(),":");
+		console.log("text:",$(e.target).text());
 		$(e.target).toggleClass('underline');
-		socket.emit('item', "booom");
+		socket.emit('item', $(e.target).text());
 	});
 
 	$('button').click(function() {
