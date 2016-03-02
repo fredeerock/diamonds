@@ -1,6 +1,6 @@
 //
 //
-// To start server with Xtra RAM - node --max_old_space_size=4096 app.js
+// To start server with Xtra RAM - NODE_DEBUG=cluster node --max_old_space_size=4096 app.js
 
 // Todo: Incorporate Node Cluster
 
@@ -10,7 +10,6 @@
 // - Then we can pull the model from the redis server by key inside each worker when needed.
 // - Still not sure this will solve things as even a few MB files may cause problems when doing it 100 times/second.
 // - Throttling may be necessary.  Or aggregation?
-
 
 var cluster = require('cluster');
 var http = require('http');
@@ -33,18 +32,14 @@ if(cluster.isMaster) {
 	   cluster.fork();
 	}
 
-
 	// Listen for dying workers
 	cluster.on('exit', function (worker) {
-
 		// Replace the dead worker,
 		// we're not sentimental
 		console.log('Worker %d died :(', worker.id);
 		cluster.fork();
 
 	});
-	
-	
 	
 	/*   All this code is to populate a Markov Model either the full one, or by grouping 10 talks at a time into an array.  Haven't verified that the array version works.  
 	// 
@@ -57,7 +52,6 @@ if(cluster.isMaster) {
 	    console.log("Error " + err);
 	});
 
-
 	// *******	RITA Markov Setup   ********
 	var rita = require('rita');
 
@@ -69,7 +63,6 @@ if(cluster.isMaster) {
 	var markovArray = [];
 	var markovArrayCount = 0;
 	var markovArrayCallCount = 0;
-
 
 	client.llen(listName, handleLength);
 
@@ -128,7 +121,8 @@ if(cluster.isMaster) {
 	
 	
 } else {
-	
+
+  	console.log('Worker ' + process.pid + ' has started.');
 	
 	// ****************  The Node Cluster ****************
 	
@@ -153,7 +147,6 @@ if(cluster.isMaster) {
 	//for (var i=0; i < client.LLEN("markovArray");i++) {
 	//	markovArray[i] = JSON.parse client.LGET("markovArray", i);
 	//}
-	
 	
 	// ***************************************************
 	//	NEXUS Node SERVER
@@ -196,10 +189,9 @@ if(cluster.isMaster) {
 
 		});
 
-			// oscSend is used to send osc messages (to Max, and freinds!)
-		var oscSend = new osc.Client(oscReceiverIP, 7745);
+	// oscSend is used to send osc messages (to Max, and freinds!)
+	var oscSend = new osc.Client(oscReceiverIP, 7745);
 
-	//
 	// ***************************************************
 
 
@@ -242,10 +234,11 @@ if(cluster.isMaster) {
 
 	// Respond to web sockets with socket.on
 	io.sockets.on('connection', function (socket) {
+		// console.log("********",socket);
 		var ioClientCounter = 0; // Can I move this outside into global vars?
 
 		socket.on('addme', function(data) {
-			var username = data.name;
+			username = data.name; // autoglobal b/c no var
 			var userColor = data.color;
 			var userNote = data.note;
 			var userLocation = data.location;
@@ -314,13 +307,10 @@ if(cluster.isMaster) {
 			}
 		});
 
-
 		socket.on('item' , function(data) {
 			console.log(socket.id + " tapped item: " + data);
 			// handleParsing();
 			// LINDEX mylist 0
-
-			// var mark = require("./markov.js");
 
 			//  LOAD Talk from submitted word
 			//markov.loadText(dataObj[0].content);
@@ -330,7 +320,8 @@ if(cluster.isMaster) {
 			// ********* !!!!!!!!    
 
 			// console.log("markov size:", markov.size());
-			// if (!markov.ready()) return;		// Discontinue if markov is not ready
+			if (!markov.ready()) return;		// Discontinue if markov is not ready
+			else console.log("markov ready!", "size is:". markov.size);
 			lines = markov.generateSentences(10);
 			linesJoined = lines.join(' ');
 			client.lpush("markov", linesJoined, redis.print);
@@ -413,7 +404,6 @@ if(cluster.isMaster) {
 
 			return title;
 		};
-
 
 		// Return random connected user name //
 		socket.on('getSomebody', function(data) {
