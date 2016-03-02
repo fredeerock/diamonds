@@ -47,9 +47,9 @@
 			var generatedText = document.getElementsByClassName('generatedText')[0];
 			generatedText.classList.add("blurAnimation");
 			generatedText.classList.add("oldgentext");
-			var mf = 10;
+			var mf = 5;
 			generatedText.style.webkitFilter = "blur("+mf+"px)";
-			console.log("COLOROOROROROROR", data.color);
+			// console.log("COLOROOROROROROR", data.color);
 			generatedText.style.color = data.color;
 			
 
@@ -70,6 +70,15 @@
 
 		socket.on('setSection', function(data) {
 			console.log("the section is now: " + data.sect + ":" + data.title);
+			document.getElementsByClassName('generatedText')[0].innerHTML= data.sect;
+
+			var generatedText = document.getElementsByClassName('generatedText')[0];
+			generatedText.classList.add("blurAnimation");
+			generatedText.classList.add("newgentext");
+			var mf = 0;
+			generatedText.style.webkitFilter = "blur("+mf+"px)";
+			// console.log("COLOROOROROROROR", data.color);
+			generatedText.style.color = data.color;
 			
 			// if(data.title == "Welcome") {
 			// 	console.log('yep');

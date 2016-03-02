@@ -22,7 +22,7 @@ body {
 }
 
 .oldgentext{
-  blur(10px);
+  /*blur(10px);*/
 }
 
 .newgentext{

@@ -10,19 +10,14 @@
 </head>
 <body>
 
-	<div class="sec sw">
-		<h1>Causeway</h1>
-		<p>Words | <strong>Vincent A. Cellucci</strong></p>
-		<p>Audio | <strong>Jesse Allison</strong></p>
-		<p>Visuals | <strong>Derick Ostrenko</strong></p>
-		<p><em>Instructions: Tapping is the new snapping.</em></p>
-		<p class ="url">Visit http://emddm.io on your mobile device to participate.</p>
-	</div>
-
-<div id="causeway-text"></div>
+<div class="generatedText"></div>
 
 	<script type="text/javascript">
-		var socket = io.connect('130.39.92.112:8000/');
+		// var socket = io.connect('130.39.92.112:8000/');
+		var socket = io.connect(window.location.origin , {transports:['websocket']} );
+
+		var currentPhrase;
+
  		socket.emit('addme', {name: "controller"});
 		
 		socket.on('chat', function(data) {
@@ -33,6 +28,22 @@
 			console.log("The section is now: " + data.title);
 		});
 
+		socket.on('itemback', function(data){
+			document.getElementsByClassName('generatedText')[0].innerHTML= data.phrase;
+			console.log("itemback: " + data.phrase);
+			currentPhrase = data.phrase;
+			var generatedText = document.getElementsByClassName('generatedText')[0];
+			generatedText.classList.add("blurAnimation");
+			generatedText.classList.add("oldgentext");
+			var mf = 0;
+			generatedText.style.webkitFilter = "blur("+mf+"px)";
+			// console.log("COLOROOROROROROR", data.color);
+			generatedText.style.color = "black";
+			generatedText.style.fontSize = "2em";
+			addEvents();
+			
+		});
+
 		function scrollto(element){ 
 			var ele = document.getElementsByClassName(element)[0];
 			if (!!ele) {
@@ -41,34 +52,42 @@
 		}
 
 		function clickgo() {
-			var elements = document.getElementsByClassName(this.className);
-			var section = elements[0].className.split(" ")[1];
-			scrollto(section);
-			var num = section.split("s")[1];
-			console.log(num);
-			socket.emit("section", num);
+			// var elements = document.getElementsByClassName(this.className);
+			// var section = elements[0].className.split(" ")[1];
+			// scrollto(section);
+			// var num = section.split("s")[1];
+			console.log("curr:", currentPhrase);
+			socket.emit("section", currentPhrase);
 		}
 
 		window.onload = function() {
-
 			var xhr= new XMLHttpRequest();
-			xhr.open('GET', 'data/causeway.html', true);
+			xhr.open('GET', '../data/score.txt', true);
 			xhr.onreadystatechange= function() {
 			    if (this.readyState!==4) return;
 			    if (this.status!==200) return; // or whatever error handling you want
-			    document.getElementById("causeway-text").innerHTML= this.responseText;
-			    addEvents();
+			    document.getElementsByClassName('generatedText')[0].innerHTML= this.responseText;
 			};
 			xhr.send();
+		};
 
-			function addEvents() {
-				var phrases = document.getElementsByClassName('sec');
-				for (var i = 0; i < phrases.length; i++) {
-					phrases[i].addEventListener("click", clickgo, false);
-				}
+		function addEvents() {
+			document.getElementsByClassName('generatedText')[0].addEventListener("click", clickgo, false);
+				// for (var i = 0; i < phrases.length; i++) {
+				// 	phrases[i].addEventListener("click", clickgo, false);
+				// }
 			}
 
-		};
+		// window.onload = function() {
+
+		// 	function addEvents() {
+		// 		var phrases = document.getElementsByClassName('sec');
+		// 		for (var i = 0; i < phrases.length; i++) {
+		// 			phrases[i].addEventListener("click", clickgo, false);
+		// 		}
+		// 	}
+
+		// };
 
 	</script>
 	

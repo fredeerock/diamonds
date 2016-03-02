@@ -328,23 +328,23 @@ socket.on('chat', function(data){
 });
 
 socket.on('setSection', function(data) {
-	console.log(data);
+	// console.log(data);
 	console.log("the section is now: " + data.title);
 
-	if (data.sect == "15") {
-		Tone.startMobile();
-		causeSound.playBrought();
-	}
+	// if (data.sect == "15") {
+	// 	Tone.startMobile();
+	// 	causeSound.playBrought();
+	// }
 	
-	if(data.title !== undefined){
-		var otherClasses = document.querySelectorAll('.sec');
+	// if(data.title !== undefined){
+	// 	var otherClasses = document.querySelectorAll('.sec');
 
-		for (var i = 0; i < otherClasses.length; i++) {
-		    otherClasses[i].style.display = 'none';
-		}
+	// 	for (var i = 0; i < otherClasses.length; i++) {
+	// 	    otherClasses[i].style.display = 'none';
+	// 	}
 
-		document.getElementsByClassName("s"+data.sect)[0].style.display = 'block';
-	}
+	// 	document.getElementsByClassName("s"+data.sect)[0].style.display = 'block';
+	// }
 	
 });
 
