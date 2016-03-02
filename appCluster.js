@@ -2,9 +2,7 @@
 //
 // To start server with Xtra RAM - node --max_old_space_size=4096 app.js
 
-
 // Todo: Incorporate Node Cluster
-
 
 // Notes: 
 // - There is no large data shared between workers. We can't just load up huge models in each worker as it fills up available ram very quickly.  Perhaps we can store smaller ones in redis and pull them as needed?
@@ -14,38 +12,35 @@
 // - Throttling may be necessary.  Or aggregation?
 
 
-
 var cluster = require('cluster');
 var http = require('http');
-
-
 
 if(cluster.isMaster) {
 	
 	// we create a HTTP server, but we do not use listen
-  // that way, we have a socket.io server that doesn't accept connections
-  var server = require('http').createServer();
-  var io = require('socket.io').listen(server);
-  var redis = require('socket.io-redis');
+	// that way, we have a socket.io server that doesn't accept connections
+	var server = require('http').createServer();
+	var io = require('socket.io').listen(server);
+	var redis = require('socket.io-redis');
 
-  io.adapter(redis({ host: 'localhost', port: 6379 }));
+	io.adapter(redis({ host: 'localhost', port: 6379 }));
 
-   // Count the machine's CPUs
-   // var cpuCount = require('os').cpus().length;
+	// Count the machine's CPUs
+	// var cpuCount = require('os').cpus().length;
 
-   // Create a worker for each CPU
-   for (var i = 0; i < 5; i += 1) {
-       cluster.fork();
-   }
+	// Create a worker for each CPU
+	for (var i = 0; i < 5; i += 1) {
+	   cluster.fork();
+	}
 
 
 	// Listen for dying workers
 	cluster.on('exit', function (worker) {
 
-	    // Replace the dead worker,
-	    // we're not sentimental
-	    console.log('Worker %d died :(', worker.id);
-	    cluster.fork();
+		// Replace the dead worker,
+		// we're not sentimental
+		console.log('Worker %d died :(', worker.id);
+		cluster.fork();
 
 	});
 	
@@ -179,8 +174,6 @@ if(cluster.isMaster) {
 	app.use(express.static(__dirname + '/public'));
 
 
-
-
 	// ***************************************************
 	//	OSC Setup for sending (and receiving) OSC (to Max)
 
@@ -237,8 +230,6 @@ if(cluster.isMaster) {
 	
 	io.adapter(redis({ host: 'localhost', port: 6379 }));
 
-
-
 	// ***************************************************
 	// Global Variables!
 
@@ -254,7 +245,7 @@ if(cluster.isMaster) {
 		var ioClientCounter = 0; // Can I move this outside into global vars?
 
 		socket.on('addme', function(data) {
-			username = data.name;
+			var username = data.name;
 			var userColor = data.color;
 			var userNote = data.note;
 			var userLocation = data.location;
@@ -274,14 +265,14 @@ if(cluster.isMaster) {
 			}
 
 			socket.username = username; // allows the username to be retrieved anytime the socket is used
-					// Can add any other pertinent details to the socket to be used later
 			socket.userLocation = userLocation;
 			socket.userColor = userColor;
 			socket.userNote = userNote;
+			// Can add any other pertinent details to the socket to be used later
 
-					// .emit to send message back to caller.
+			// .emit to send message back to caller.
 			socket.emit('chat', 'SERVER: You have connected. Hello: ' + username + " " + socket.id + 'Color: ' + socket.userColor);
-					// .broadcast to send message to all sockets.
+			// .broadcast to send message to all sockets.
 			//socket.broadcast.emit('chat', 'SERVER: A new user has connected: ' + username + " " + socket.id + 'Color: ' + socket.userColor);
 
 			var title = getSection(currentSection);
@@ -289,12 +280,14 @@ if(cluster.isMaster) {
 			if(username == "a_user") {
 				console.log("Hello:", socket.username, "currentSection:", currentSection, "id:", socket.id, "userColor:", socket.userColor, "userLocation:", socket.userLocation, "userNote:", socket.userNote);
 			}
-					// Set Section to the current one.
+			
+			// Set Section to the current one.
 			socket.emit('setSection', {sect: currentSection, title: title});
 
 			if(username == "a_user") {
 				// oscSend.send('/causeway/registerUser', socket.id, socket.userColor, socket.userLocation[0],socket.userLocation[1], socket.userNote);
 			}
+
 		});
 
 		socket.on('disconnect', function() {
@@ -302,12 +295,12 @@ if(cluster.isMaster) {
 			// io.sockets.emit('chat', 'SERVER: ' + socket.id + ' has left the building');
 		});
 
-					// Transmit to everyone who is connected //
+		// Transmit to everyone who is connected //
 		socket.on('sendchat', function(data) {
 			io.sockets.emit('chat', socket.username, data);
 		});
 
-					// Send to all other users connected // 
+		// Send to all other users connected // 
 		socket.on('tap', function(data) {
 			// console.log("Data: ", data.inspect);
 			// oscSend.send('/tapped', 1);
@@ -324,10 +317,10 @@ if(cluster.isMaster) {
 
 		socket.on('item' , function(data) {
 			console.log(socket.id + " tapped item: " + data);
-	// handleParsing();
+			// handleParsing();
 			// LINDEX mylist 0
 
-	// var mark = require("./markov.js");
+			// var mark = require("./markov.js");
 
 			//  LOAD Talk from submitted word
 			//markov.loadText(dataObj[0].content);
@@ -336,18 +329,16 @@ if(cluster.isMaster) {
 			markov = client.LINDEX("markovArray", 0);
 			// ********* !!!!!!!!    
 
-			console.log("markov size:", markov.size());
-			if (!markov.ready()) return;		// Discontinue if markov is not ready
+			// console.log("markov size:", markov.size());
+			// if (!markov.ready()) return;		// Discontinue if markov is not ready
 			lines = markov.generateSentences(10);
 			linesJoined = lines.join(' ');
 			client.lpush("markov", linesJoined, redis.print);
 			console.log(linesJoined);
 
 
-
 			client.lindex("markov", 0, function (err, data) {
 				// io.sockets.emit('chat', data);
-
 				// console.log(data);
 			})
 
@@ -362,7 +353,7 @@ if(cluster.isMaster) {
 		});
 
 
-						// Functions to send on to Max //
+		// Functions to send on to Max //
 		socket.on('triggerCauseway', function(data) {
 			// oscSend.send('/causeway/triggerCauseway', socket.id);
 		});
@@ -389,7 +380,7 @@ if(cluster.isMaster) {
 
 		var sectionTitles = ["Welcome", "Markov", "Diamonds in Distopia", "Markov", "for a minute", "End"];
 
-					// sendSection(currentSection);	 // Sets everyone's section
+		// sendSection(currentSection);	 // Sets everyone's section
 		sendSection = function (sect) {
 			var title = getSection(sect);
 			io.sockets.emit('setSection', {sect: sect, title: title});
@@ -398,7 +389,7 @@ if(cluster.isMaster) {
 
 		};
 
-					// Section shared from Max to UIs
+		// Section shared from Max to UIs
 		shareSection = function(sect) {
 			var title = getSection(sect);
 			io.sockets.emit('setSection', sect, title);
@@ -424,7 +415,7 @@ if(cluster.isMaster) {
 		};
 
 
-					// Return random connected user name //
+		// Return random connected user name //
 		socket.on('getSomebody', function(data) {
 			console.log("Get Somebody! ");
 
