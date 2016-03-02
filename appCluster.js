@@ -240,8 +240,7 @@ if(cluster.isMaster) {
 	var currentSection = 0;		// current section.
 	var theaterID;
 	var conrollerID;
-			var idata;
-
+	var idata; //replace this eventually. see note below on sscan().
 
 	// ***************************************************
 
@@ -329,11 +328,11 @@ if(cluster.isMaster) {
 			var cursor = '0';
 			
 			idata = data;
-			console.log("outside data is", data);
+			// console.log("outside data is", data);
 
 			sscan();
 			function sscan() {
-				console.log("fucntion data is", idata);
+				// console.log("fucntion data is", idata);
 
 			    client.sscan(
 			        "itemsset",
@@ -360,7 +359,9 @@ if(cluster.isMaster) {
 								// console.log(keys);
 								try {
 									// console.log(JSON.parse(keys).title);
-									scanResults.push(JSON.parse(keys))
+									if(scanResults.length<10) {
+										scanResults.push(JSON.parse(keys))
+									}
 								} catch (err){
 									console.log("error:", err)
 								}
@@ -391,52 +392,75 @@ if(cluster.isMaster) {
 
 			            	console.log('--- Iteration complete, matches below ---');
 			            	var srCount = 0;
+			            	
 			            	scanResults.forEach(function(entry) {
 			            		srCount++;
     							console.log(srCount+": "+entry.title);
+    							
 							});
+							markoving(scanResults);
 
 			                return console.log("--- Done ---");
 
 			            }
 
-			            return sscan();
+			            return sscan(); //forgot about this. in the future should probably use this to pass data around instead of global idata.
 			        }
 			    );
 			}
 
-			//sscan itemsset 0 match *Rwanda* count 2050
-			// handleParsing();
-			// LINDEX mylist 0
+			function markoving(d) {
+				var contents = [];
 
-			//  LOAD Talk from submitted word
-			//markov.loadText(dataObj[0].content);
-			
-			// ********* !!!!!!!!  FIXME: Once the array is loaded in redis, something like this will pull it back out for usage.
-			var markovItem = client.LINDEX("markovArray", 0);
-			// ********* !!!!!!!!    
+				for (var i = 0; i < d.length; i++) {
+					contents[i] = d[i].content;
+				}
+				
+				// console.log("ddddd",d);
+				var joinedText = contents.join(' '); 
+				// console.log(joinedText);
+								// console.log("*** LINES JOINED ***", joinedText);
 
-			// console.log("markov size:", markov.size());
-			if (!markov.ready()) return;		// Discontinue if markov is not ready
-			else console.log("markov ready!", "size is:". markov.size);
-			lines = markov.generateSentences(10);
-			linesJoined = lines.join(' ');
-			client.lpush("markov", linesJoined, redis.print);
-			console.log(linesJoined);
+				markov.loadText(joinedText);
+
+				//sscan itemsset 0 match *Rwanda* count 2050
+				// handleParsing();
+				// LINDEX mylist 0
+
+				//  LOAD Talk from submitted word
+				//markov.loadText(dataObj[0].content);
+				
+				// ********* !!!!!!!!  FIXME: Once the array is loaded in redis, something like this will pull it back out for usage.
+				// var markovItem = client.LINDEX("markovArray", 0);
+				// ********* !!!!!!!!    
+
+				// console.log("markov size:", markov.size());
+				if (!markov.ready()) {
+					return console.log("markov not ready"); // Discontinue if markov is not ready
+				} 
+
+				// else {		
+				// 	console.log("markov ready!", "size is:". markov.size());
+				// }
+
+				lines = markov.generateSentences(10);
+				linesJoined = lines.join(' ');
+				client.lpush("markov", linesJoined, redis.print);
 
 
-			client.lindex("markov", 0, function (err, data) {
-				// io.sockets.emit('chat', data);
-				// console.log(data);
-			})
+				client.lindex("markov", 0, function (err, data) {
+					// io.sockets.emit('chat', data);
+					// console.log(data);
+				})
 
-			// diamonds > Sending to the Theatre if connected
-			if(io.sockets.connected[theaterID]!== null) {
-				// io.sockets.connected[theaterID].emit('itemback', {phrase: data, color: socket.userColor}, 1);
+				// diamonds > Sending to the Theatre if connected
+				if(io.sockets.connected[theaterID]!== null) {
+					// io.sockets.connected[theaterID].emit('itemback', {phrase: data, color: socket.userColor}, 1);
+				}
+
+				// socket.broadcast.emit('itemback', {phrase: data, color: socket.userColor}, 1);
+				// oscSend.send('/causeway/phrase/number', socket.id, data);
 			}
-
-			// socket.broadcast.emit('itemback', {phrase: data, color: socket.userColor}, 1);
-			// oscSend.send('/causeway/phrase/number', socket.id, data);
 
 		});
 
