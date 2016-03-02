@@ -11,8 +11,8 @@
 // - Still not sure this will solve things as even a few MB files may cause problems when doing it 100 times/second.
 // - Throttling may be necessary.  Or aggregation?
 
+var express = require('express');
 var cluster = require('cluster');
-var http = require('http');
 
 if(cluster.isMaster) {
 	
@@ -158,8 +158,8 @@ if(cluster.isMaster) {
 	// ***************************************************
 
 	// Setup web app - using express to serve pages
-	var express = require('express'),
-			sio = require('socket.io')
+	var express = require('express');
+	var sio = require('socket.io');
 
 
 	var app = express();
