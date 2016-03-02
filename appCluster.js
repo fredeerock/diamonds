@@ -11,34 +11,46 @@
 // - Still not sure this will solve things as even a few MB files may cause problems when doing it 100 times/second.
 // - Throttling may be necessary.  Or aggregation?
 
-var express = require('express');
 var cluster = require('cluster');
+var app = require('express')();
+var http = require('http');
+var io = require('socket.io');
+var redis = require('redis');
+var redisAdapter = require('socket.io-redis');
+
+var port = process.env.PORT || 3000;
+var workers = process.env.WORKERS || require('os').cpus().length;
+
+var redisUrl = process.env.REDISTOGO_URL || 'redis://127.0.0.1:6379';
+
+app.get('/', function(req, res) {
+  res.sendfile('index.html');
+});
+
+function start() {
+	var httpServer = http.createServer( app );
+	var server = httpServer.listen( port );
+	io = io.listen(server);
+	io.adapter(redisAdapter({ host: 'localhost' , port : 6379 }));
+	console.log('Redis adapter started with url: ' + redisUrl);
+	io.on('connection', function(socket) {
+		socket.on('chat message', function(msg) {
+			io.emit('chat message', msg);
+		});
+	});
+}
 
 if(cluster.isMaster) {
-	
-	// we create a HTTP server, but we do not use listen
-	// that way, we have a socket.io server that doesn't accept connections
-	var server = require('http').createServer();
-	var io = require('socket.io').listen(server);
-	var redis = require('socket.io-redis');
 
-	io.adapter(redis({ host: 'localhost', port: 6379 }));
-
-	// Count the machine's CPUs
-	// var cpuCount = require('os').cpus().length;
-
-	// Create a worker for each CPU
-	for (var i = 0; i < 5; i += 1) {
-	   cluster.fork();
+	console.log('start cluster with %s workers', workers - 1);
+	workers--;
+	for (var i = 0; i < workers; ++i) {
+		var worker = cluster.fork();
+	console.log('worker %s started.', worker.process.pid);
 	}
 
-	// Listen for dying workers
-	cluster.on('exit', function (worker) {
-		// Replace the dead worker,
-		// we're not sentimental
-		console.log('Worker %d died :(', worker.id);
-		cluster.fork();
-
+	cluster.on('death', function(worker) {
+		console.log('worker %s died. restart...', worker.process.pid);
 	});
 	
 	/*   All this code is to populate a Markov Model either the full one, or by grouping 10 talks at a time into an array.  Haven't verified that the array version works.  
@@ -121,12 +133,9 @@ if(cluster.isMaster) {
 	
 	
 } else {
-
-  	console.log('Worker ' + process.pid + ' has started.');
-	
-	// ****************  The Node Cluster ****************
-	
-	var redis = require("redis");
+	start();
+		
+	// var redis = require("redis");
 	var client = redis.createClient();
 
 	client.on("error", function (err) {
