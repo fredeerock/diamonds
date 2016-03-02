@@ -284,14 +284,18 @@ $(function () {
 	$('p').html(modText);
 
 	$('p').click(function (e) {
-		var text = $(e.target).text();
+		target = event.target || event.srcElement;
+
+		if (target.nodeName.toLowerCase() === "span") {
+			var text = $(e.target).text();
 		
-		// FIXME: Filter out a touch in blank space!
+			// FIXME: Filter out a touch in blank space!
 		
-		console.log("text:",text);
-		$(e.target).toggleClass('underline');
-		dSound.speak(text);
-		socket.emit('item', text);
+			console.log("text:",text);
+			$(e.target).toggleClass('underline');
+			dSound.speak(text);
+			socket.emit('item', text);
+		}
 	});
 
 	$('button').click(function() {
