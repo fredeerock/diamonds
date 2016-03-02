@@ -12,20 +12,25 @@
 // - Throttling may be necessary.  Or aggregation?
 
 var cluster = require('cluster');
-var app = require('express')();
+var express = require('express');
 var http = require('http');
 var io = require('socket.io');
 var redis = require('redis');
 var redisAdapter = require('socket.io-redis');
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 8000;
 var workers = process.env.WORKERS || require('os').cpus().length;
 
 var redisUrl = process.env.REDISTOGO_URL || 'redis://127.0.0.1:6379';
 
-app.get('/', function(req, res) {
-  res.sendfile('index.html');
-});
+
+var app = express();
+app.use(express.static(__dirname + '/public'));
+
+
+// app.get('/', function(req, res) {
+//   res.sendfile('index.html');
+// });
 
 function start() {
 	var httpServer = http.createServer( app );
@@ -167,13 +172,13 @@ if(cluster.isMaster) {
 	// ***************************************************
 
 	// Setup web app - using express to serve pages
-	var express = require('express');
-	var sio = require('socket.io');
+	// var express = require('express');
+	// var sio = require('socket.io');
 
 
-	var app = express();
+	// var app = express();
 
-	app.use(express.static(__dirname + '/public'));
+	// app.use(express.static(__dirname + '/public'));
 
 
 	// ***************************************************
@@ -210,26 +215,26 @@ if(cluster.isMaster) {
 	// this code launches the server on port 80 and switches the user id away from sudo
 	// apparently this makes it more secure - if something goes awry it isn't running under the superuser.
 
-	var serverPort = 8000;
-	// var serverPort = 80;
+	// var serverPort = 8000;
+	// // var serverPort = 80;
 
-	var server = http.createServer(app)
-		.listen(serverPort, function(err) {
-			if (err) return cb(err);
+	// var server = http.createServer(app)
+	// 	.listen(serverPort, function(err) {
+	// 		if (err) return cb(err);
 
-			// Find out which user used sudo through the environment variable
-			var uid = parseInt(process.env.SUDO_UID);
-			// Set our server's uid to that user
+	// 		// Find out which user used sudo through the environment variable
+	// 		var uid = parseInt(process.env.SUDO_UID);
+	// 		// Set our server's uid to that user
 
-			if (uid) process.setuid(uid);
-			console.log('Server\'s UID is now ' + process.getuid());
-		});
+	// 		if (uid) process.setuid(uid);
+	// 		console.log('Server\'s UID is now ' + process.getuid());
+	// 	});
 
-	// start socket.io listening on the server
-	var io = sio.listen(server);
-	var redis = require('socket.io-redis');
+	// // start socket.io listening on the server
+	// var io = sio.listen(server);
+	// var redis = require('socket.io-redis');
 	
-	io.adapter(redis({ host: 'localhost', port: 6379 }));
+	// io.adapter(redis({ host: 'localhost', port: 6379 }));
 
 	// ***************************************************
 	// Global Variables!
