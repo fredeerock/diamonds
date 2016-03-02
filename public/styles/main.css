@@ -1,12 +1,36 @@
 body{
    padding: 0px;
    margin: 0px;
+/*   position: relative;
+   width: 100%;*/
  }
+
+/* .flex-init-setup {
+     display: -webkit-box;
+     display: -moz-box;
+     display: -webkit-flex;
+     display: -ms-flexbox;
+     display: flex;
+ }
+ .flex-ppal-setup {
+     -webkit-flex-flow: column wrap;
+     -moz-flex-flow: column wrap;
+     flex-flow: column wrap;
+     -webkit-justify-content: center;
+     -moz-justify-content: center;
+     justify-content: center;
+ }*/
 
 #gradient {
   width: 100%;
+  /*width: 1920px;*/
+/*  position: absolute;
+  top: 0;
+  right: 0;*/
+  /*z-index: -100;*/
   height: 100%;
   padding: 10px;
+  padding-right: 100px;
   margin: 0px;
 }
 
@@ -29,25 +53,12 @@ pre {
 	font-size: 1.0em;
 }
 
-#causeway-text {
+.scoreText {
 	white-space: pre;
 }
 
 .sec{
 	display: none;
-}
-
-.sw {
-  display: block;
-	text-align: center;
-}
-
-.sw p{
-	font-size: 1.0em
-}
-
-.sw .url{
-	font-size: 1.5em
 }
 
 #causeway-text span {

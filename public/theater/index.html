@@ -14,6 +14,7 @@
 	</div>
 
 <div class="generatedText"></div>
+<div class="newgentext"></div>
 
 	<script>
 
@@ -40,17 +41,36 @@
 
 		});
 
-		socket.on('itemback', function(data){
-			document.getElementsByClassName('generatedText')[0].innerHTML= data.phrase;
-			console.log("itemback: " + data.phrase);
+		// var start = null;
+		// var element = document.getElementById("SomeElementYouWantToAnimate");
+		// element.style.position = 'absolute';
 
-			var generatedText = document.getElementsByClassName('generatedText')[0];
-			generatedText.classList.add("blurAnimation");
-			generatedText.classList.add("oldgentext");
-			var mf = 5;
-			generatedText.style.webkitFilter = "blur("+mf+"px)";
-			// console.log("COLOROOROROROROR", data.color);
-			generatedText.style.color = data.color;
+		// function step(timestamp) {
+		// 	if (!start) start = timestamp;
+		// 	var progress = timestamp - start;
+		// 	element.style.left = Math.min(progress/10, 200) + "px";
+		// 	if (progress < 2000) {
+		// 		window.requestAnimationFrame(step);
+		// 	}
+		// }
+
+		// window.requestAnimationFrame(step);
+
+		socket.on('itemback', function(data){
+			
+			// if(timer){
+				document.getElementsByClassName('generatedText')[0].innerHTML= data.phrase;
+
+				console.log("itemback: " + data.phrase);
+
+				var generatedText = document.getElementsByClassName('generatedText')[0];
+				generatedText.classList.add("blurAnimation");
+				generatedText.classList.add("oldgentext");
+				var mf = 10;
+				generatedText.style.webkitFilter = "blur("+mf+"px)";
+				// console.log("COLOROOROROROROR", data.color);
+				generatedText.style.color = data.color;
+			// }
 			
 
 			// var elements = document.getElementsByClassName(data.phrase);
@@ -70,13 +90,13 @@
 
 		socket.on('setSection', function(data) {
 			console.log("the section is now: " + data.sect + ":" + data.title);
-			document.getElementsByClassName('generatedText')[0].innerHTML= data.sect;
+			document.getElementsByClassName('newgentext')[0].innerHTML= data.sect;
 
-			var generatedText = document.getElementsByClassName('generatedText')[0];
-			generatedText.classList.add("blurAnimation");
-			generatedText.classList.add("newgentext");
-			var mf = 0;
-			generatedText.style.webkitFilter = "blur("+mf+"px)";
+			var generatedText = document.getElementsByClassName('newgentext')[0];
+			// generatedText.classList.add("blurAnimation");
+			// generatedText.classList.add("newgentext");
+			// var mf = 0;
+			// generatedText.style.webkitFilter = "blur("+mf+"px)";
 			// console.log("COLOROOROROROROR", data.color);
 			generatedText.style.color = data.color;
 			

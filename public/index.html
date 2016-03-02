@@ -18,22 +18,11 @@
 </head>
 
 <body>
+		<!-- <div id="container flex-init-setup flex-ppal-setup"> -->
 	    <div id="gradient" />
+	    <!-- </div> -->
 
-		<div class="sec sw">
-
-		<!-- <h1 onclick="causeSound.triggerCauseway();"><span class="mainTitle">Causeway</span></h1> -->			
-		<div class="sd">
-
-		</div>
-
-		<div class="st" style="display: none;">
-
-		</div>
-
-	</div>
-	<pre>
-	<p>Vincent A. Cellucci
+	<p class="scoreText">Vincent A. Cellucci
 
 Bound by Digital Countries
 
@@ -196,7 +185,6 @@ I start talking about failure
  "I want to touch it for a minute" 
 
 	</p>
-	</pre>
 	
 	<button type="button">Submit</button>
 	
@@ -348,12 +336,12 @@ socket.on('setSection', function(data) {
 	
 });
 
-function scrollto(element){ 
-	var ele = document.getElementsByClassName("s"+element)[0];
-    if (ele) {
-    	window.scrollTo(0, ele.offsetTop);
-    }
-}
+// function scrollto(element){ 
+// 	var ele = document.getElementsByClassName("s"+element)[0];
+//     if (ele) {
+//     	window.scrollTo(0, ele.offsetTop);
+//     }
+// }
 
 socket.on('itemback', function(data){
 	// console.log("itemback: " + data.phrase);

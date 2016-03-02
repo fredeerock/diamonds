@@ -3,7 +3,7 @@ body {
 	align-items: center;
 	justify-content: center;*/
 	font-family: 'Vollkorn', serif;
-	font-size: 1.1em;
+	font-size: 3.75em;
 	background-color: black;
 	color: white;
 
@@ -14,11 +14,17 @@ body {
 }
 
 .generatedText {
-  font-size: 1.5em;
+  /*font-size: 1.5em;*/
   width: 60%;
   margin: 0 auto;
   margin-top: 10%;
 
+}
+
+.scoreText{
+/*  white-space: pre;
+  overflow-x:scroll;
+  overflow-y:scroll;*/
 }
 
 .oldgentext{
