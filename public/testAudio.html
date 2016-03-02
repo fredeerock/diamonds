@@ -19,11 +19,98 @@
 		
 		var self = this;
 		
+		
+		meSpeak.loadConfig("scripts/mespeak/mespeak_config.json");
+		//meSpeak.loadVoice('scripts/mespeak/voices/en/en-us.json');
+		meSpeak.loadVoice('scripts/mespeak/voices/en/en.json');
+		//meSpeak.speak('hello world',{},toneSetup());
+		
+		
+		
+		var DiamondSound = function () {
+			this.tone = new Tone();
+			
+			this.pitchCollection = [55, 57, 59, 61, 62, 64, 66, 67, 68, 69, 71, 73, 75, 76, 78, 80, 82, 83];
+			this.pitch = this.pitchCollection[Math.floor(Math.random() * (this.pitchCollection.length))];
+			
+			this.synth = new Tone.SimpleSynth({
+				"oscillator" : {
+					"type" : "sine"
+			 },
+			 "envelope" : {
+			 	"attack" : 2.0,
+				"decay" : 0.5,
+				"sustain" : 0.8,
+				"release" : 2.0
+			 }
+			}).toMaster();
+
+			this.playerDiamonds = new Tone.Player("data/diamonds_in_distopia.mp3").toMaster();
+			this.playerKepler = new Tone.Player("data/Kepler_Star.mp3").toMaster();
+
+			this.gainy = new Tone.Gain().toMaster();
+			this.filt2 = new Tone.Filter(this.tone.midiToNote(this.pitch+12), "bandpass").connect(this.gainy);
+			this.filt = new Tone.Filter(this.tone.midiToNote(this.pitch+12), "bandpass").connect(this.filt2);
+			this.filt.Q.value = 9;
+			this.filt.gain.value = 40;
+			this.filt2.Q.value = 2;
+			this.filt2.gain.value = 40;
+			this.ns = new Tone.Noise('pink').connect(this.filt);
+			this.gainy.gain.value = 10.;
+			
+			this.synth.triggerAttackRelease("C4", "8n",{} , 0.25);
+			
+			meSpeak.setAudioContext(this.tone.context);
+			meSpeak.speakToNode(this.filt);
+			meSpeak.speak('Diamonds');
+			
+			this.playPitch = function () {
+				this.synth.triggerAttackRelease(this.tone.midiToNote(this.pitch+12), 5);
+			};
+
+			this.triggerPitch = function () {
+				this.synth.triggerAttackRelease(this.tone.midiToNote(this.pitch+12), 5);
+				// socket.emit('triggerPitch', dSound.pitch);
+			};
+
+			this.playDiamonds = function() {
+				this.playerDiamonds.start();
+			};
+
+			this.playKepler = function() {
+				this.playerKepler.start();
+			};
+			
+			this.triggerDiamonds = function() {
+				this.synth.triggerAttackRelease(this.tone.midiToNote(this.pitch+12), 5);
+				this.playerDiamonds.start();
+				// socket.emit('triggerCauseway', causeSound.pitch);
+
+				var elements = document.getElementsByClassName("mainTitle");
+				// elements[0].className += " clicked";
+				elements[0].style.backgroundColor = myColor;
+			};
+			
+			this.speak = function(text) {
+				this.pitch = this.pitchCollection[Math.floor(Math.random() * (this.pitchCollection.length))];
+				var freq = this.tone.midiToNote(this.pitch+12);
+				this.filt.frequency.value = (freq);
+				this.filt2.frequency.value = (freq);
+				meSpeak.speak(text);
+				this.synth.triggerAttackRelease(freq, "4n",{} , 0.15);
+			};
+		}
+		
+		var dSound = new DiamondSound();
+		
+		
+		
+/*	
 		tone = new Tone();
 		pitchCollection = [55, 57, 59, 61, 62, 64, 66, 67, 68, 69, 71, 73, 75, 76, 78, 80, 82, 83];
-		
 		pitch = pitchCollection[Math.floor(Math.random() * (pitchCollection.length))];
-	
+*/
+/*
 		function toneSetup() {
 			// var ctx = meSpeak.getAudioContext();
 			// Tone.setContext(ctx);		// only works after meSpeak has loaded...
@@ -48,16 +135,16 @@
 			meSpeak.speakToNode(self.filt);
 			meSpeak.speak('Diamonds');
 		}
-		
+*/		
 		// ****** mespeak.js *******//
-		
+/*		
 		meSpeak.loadConfig("scripts/mespeak/mespeak_config.json");
 		//meSpeak.loadVoice('scripts/mespeak/voices/en/en-us.json');
 		meSpeak.loadVoice('scripts/mespeak/voices/en/en.json');
 		//meSpeak.speak('hello world',{},toneSetup());
 		
 		toneSetup();
-		
+*/		
 		
 		
 		/// ********* Auto Span Speech Enablement ********** ///
@@ -83,9 +170,9 @@
 		
 		window.onload = function () {
 			transcript_element = $id(transcriptElementID);
-			console.log(transcript_element);
+			// console.log(transcript_element);
 			if(caption_array.length === 0){ caption_array = getSpans(transcript_element); }
-			console.log("captions: ", caption_array);
+			// console.log("captions: ", caption_array);
 			enableTranscript();
 		};
 				
@@ -129,68 +216,20 @@
 							if(typeof position === UNDEFINED){ return FALSE; }
 							
 							// console.log("Speak: ", caption_array[position]);
+							/*
 							pitch = pitchCollection[Math.floor(Math.random() * (pitchCollection.length))];
 							var freq = tone.midiToNote(pitch+12);
 							self.filt.frequency.value = (freq);
 							self.filt2.frequency.value = (freq);
 							self.synth.triggerAttackRelease(freq, "4n",{} , 0.15);
 							meSpeak.speak(caption_array[position]);
+							*/
+							
+							dSound.speak(caption_array[position]);
+							
 						}
 					};
 				};
-		
-		
-
-
-
-
-		// ****** Built in speech Synthesis -- easy, but no use with webaudio ****** //
-/*	
-		if ('speechSynthesis' in window) {
-		 // Synthesis support. Make your web apps talk!
-			var msg = new SpeechSynthesisUtterance('Hello World');
-			window.speechSynthesis.speak(msg);
-
-			var msg = new SpeechSynthesisUtterance();
-			var voiceOptions = window.speechSynthesis.getVoices();
-			voiceOptions.forEach(function(voice) {
-			  console.log(voice.name, voice.default ? '(default)' :'');
-			});
-
-			msg.voice = voiceOptions[3]; // Note: some voices don't support altering params
-			msg.voiceURI = 'native';
-			msg.volume = 1; // 0 to 1
-			msg.rate = 1; // 0.1 to 10
-			msg.pitch = 1.5; //0 to 2
-			msg.text = 'TedX in the house!';
-			msg.lang = 'en-US';
-
-			msg.onend = function(e) {
-			  console.log('Finished in ' + event.elapsedTime + ' seconds.');
-			};
-
-			speechSynthesis.speak(msg);
-			
-			var msg = new SpeechSynthesisUtterance('I see dead people!');
-			msg.voice = speechSynthesis.getVoices().filter(function(voice) { return voice.name == 'Whisper'; })[0];
-			msg.pitch = 0.5;
-			msg.rate = 0.7;
-			speechSynthesis.speak(msg);
-			
-		} else {
-			console.log('No Speech for you!')
-		}
-
-		if ('SpeechRecognition' in window) {
-		  // Speech recognition support. Talk to your apps!
-		}
-		
-*/
-		
-		// ***************************************** //
-
-
-		
 		
 	</script>
 </head>
