@@ -323,6 +323,7 @@ if(cluster.isMaster) {
 			// client.sscan(0, );
 			//sscan itemsset 0 match *Rwanda* count 2050
 			
+			var scanResults = [];
 			var cursor = '0';
 			sscan(data);
 			function sscan(data) {
@@ -346,7 +347,10 @@ if(cluster.isMaster) {
 			            // Additionally, you should always have the code that uses the keys
 			            // before the code checking the cursor.
 			            if (keys.length > 0) {
-			                console.log('Array of matching keys', keys);
+			                console.log("### Results:", String(JSON.parse(keys).title), "###");
+			                if (scanResults.length<10){
+			                	scanResults.push(JSON.parse(keys).content);
+			                } 
 			            }
 
 			            // It's important to note that the cursor and returned keys
@@ -362,7 +366,7 @@ if(cluster.isMaster) {
 			            // 'An iteration starts when the cursor is set to 0,
 			            // and terminates when the cursor returned by the server is 0.'
 			            if (cursor === '0') {
-			                return console.log('Iteration complete');
+			                return console.log('### Iteration complete ###');
 			            }
 
 			            return sscan();
