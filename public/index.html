@@ -13,6 +13,8 @@
 	<script src="/socket.io/socket.io.js"></script>
 	<!-- <script type="text/javascript" src="js/Tone.min.js"></script> -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script type="text/javascript" src="scripts/mespeak/mespeak.full.min.js"></script>
+	<script type="text/javascript" src="scripts/Tone.js"></script>
 </head>
 
 <body>
@@ -282,9 +284,14 @@ $(function () {
 	$('p').html(modText);
 
 	$('p').click(function (e) {
-		console.log("text:",$(e.target).text());
+		var text = $(e.target).text();
+		
+		// FIXME: Filter out a touch in blank space!
+		
+		console.log("text:",text);
 		$(e.target).toggleClass('underline');
-		socket.emit('item', $(e.target).text());
+		dSound.speak(text);
+		socket.emit('item', text);
 	});
 
 	$('button').click(function() {
@@ -437,6 +444,96 @@ var CauseSound = function () {
 		elements[0].style.backgroundColor = myColor;
 	};
 };
+
+	// Add Chords, Progression, feedback, comb filtering, shimmer!
+	
+	var self = this;
+	
+	
+	meSpeak.loadConfig("scripts/mespeak/mespeak_config.json");
+	//meSpeak.loadVoice('scripts/mespeak/voices/en/en-us.json');
+	meSpeak.loadVoice('scripts/mespeak/voices/en/en.json');
+	//meSpeak.speak('hello world',{},toneSetup());
+	
+	
+	
+	var DiamondSound = function () {
+		this.tone = new Tone();
+		
+		this.pitchCollection = [55, 57, 59, 61, 62, 64, 66, 67, 68, 69, 71, 73, 75, 76, 78, 80, 82, 83];
+		this.pitch = this.pitchCollection[Math.floor(Math.random() * (this.pitchCollection.length))];
+		
+		this.synth = new Tone.SimpleSynth({
+			"oscillator" : {
+				"type" : "sine"
+		 },
+		 "envelope" : {
+		 	"attack" : 2.0,
+			"decay" : 0.5,
+			"sustain" : 0.8,
+			"release" : 2.0
+		 }
+		}).toMaster();
+
+		this.playerDiamonds = new Tone.Player("data/diamonds_in_distopia.mp3").toMaster();
+		this.playerKepler = new Tone.Player("data/Kepler_Star.mp3").toMaster();
+
+		this.gainy = new Tone.Gain().toMaster();
+		this.filt2 = new Tone.Filter(this.tone.midiToNote(this.pitch+12), "bandpass").connect(this.gainy);
+		this.filt = new Tone.Filter(this.tone.midiToNote(this.pitch+12), "bandpass").connect(this.filt2);
+		this.filt.Q.value = 9;
+		this.filt.gain.value = 40;
+		this.filt2.Q.value = 2;
+		this.filt2.gain.value = 40;
+		this.ns = new Tone.Noise('pink').connect(this.filt);
+		this.gainy.gain.value = 10.;
+		
+		this.synth.triggerAttackRelease("C4", "8n",{} , 0.25);
+		
+		meSpeak.setAudioContext(this.tone.context);
+		meSpeak.speakToNode(this.filt);
+		meSpeak.speak('Diamonds');
+		
+		this.playPitch = function () {
+			this.synth.triggerAttackRelease(this.tone.midiToNote(this.pitch+12), 5);
+		};
+
+		this.triggerPitch = function () {
+			this.synth.triggerAttackRelease(this.tone.midiToNote(this.pitch+12), 5);
+			// socket.emit('triggerPitch', dSound.pitch);
+		};
+
+		this.playDiamonds = function() {
+			this.playerDiamonds.start();
+		};
+
+		this.playKepler = function() {
+			this.playerKepler.start();
+		};
+		
+		this.triggerDiamonds = function() {
+			this.synth.triggerAttackRelease(this.tone.midiToNote(this.pitch+12), 5);
+			this.playerDiamonds.start();
+			// socket.emit('triggerCauseway', causeSound.pitch);
+
+			var elements = document.getElementsByClassName("mainTitle");
+			// elements[0].className += " clicked";
+			elements[0].style.backgroundColor = myColor;
+		};
+		
+		this.speak = function(text) {
+			this.pitch = this.pitchCollection[Math.floor(Math.random() * (this.pitchCollection.length))];
+			var freq = this.tone.midiToNote(this.pitch+12);
+			this.filt.frequency.value = (freq);
+			this.filt2.frequency.value = (freq);
+			meSpeak.speak(text);
+			this.synth.triggerAttackRelease(freq, "4n",{} , 0.15);
+		};
+	}
+	
+	var dSound = new DiamondSound();
+
+
 		
 </script>
 	
