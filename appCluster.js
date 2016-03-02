@@ -416,10 +416,10 @@ if(cluster.isMaster) {
 					contents[i] = d[i].content;
 				}
 				
-				// console.log("ddddd",d);
+				
 				var joinedText = contents.join(' '); 
-				// console.log(joinedText);
-								// console.log("*** LINES JOINED ***", joinedText);
+				
+				// console.log("*** LINES JOINED ***", joinedText);
 
 				markov.loadText(joinedText);
 
@@ -443,20 +443,25 @@ if(cluster.isMaster) {
 				// 	console.log("markov ready!", "size is:". markov.size());
 				// }
 
-				lines = markov.generateSentences(10);
-				linesJoined = lines.join(' ');
-				client.lpush("markov", linesJoined, redis.print);
+				var lines = markov.generateSentences(3);
+				var markovJoined = lines.join(' ');
+				// client.lpush("markov", linesJoined, redis.print);
+
+				io.sockets.emit('itemback', {phrase: markovJoined});
 
 
-				client.lindex("markov", 0, function (err, data) {
-					// io.sockets.emit('chat', data);
-					// console.log(data);
-				})
+
+				// client.lindex("markov", 0, function (err, data) {
+				// 	// io.sockets.emit('chat', data);
+				// 	// console.log(data);
+				// })
 
 				// diamonds > Sending to the Theatre if connected
-				if(io.sockets.connected[theaterID]!== null) {
-					// io.sockets.connected[theaterID].emit('itemback', {phrase: data, color: socket.userColor}, 1);
-				}
+				// if(io.sockets.connected[theaterID]!== null) {
+				// 	io.sockets.connected[theaterID].emit('itemback', {
+				// 		phrase: markovJoined, 
+				// 		color: socket.userColor});
+				// }
 
 				// socket.broadcast.emit('itemback', {phrase: data, color: socket.userColor}, 1);
 				// oscSend.send('/causeway/phrase/number', socket.id, data);

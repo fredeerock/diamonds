@@ -19,7 +19,9 @@
 		// var socket = io.connect('http://emdm.io/', { path: '/sio/socket.io' });
  		// var socket = io.connect('http://emdm.io/sio');
 		// var socket = io.connect('127.0.0.1:8000/');
-		var socket = io.connect('167.96.65.182:8000');
+		// var socket = io.connect('167.96.65.182:8000');
+		var socket = io.connect(window.location.origin , {transports:['websocket']} );
+
 
  		socket.emit('addme', {name: "theater"});
 		
@@ -30,6 +32,7 @@
 		});
 
 		socket.on('itemback', function(data){
+			document.getElementById("causeway-text").innerHTML= data.phrase;
 			console.log("itemback: " + data.phrase);
 			var elements = document.getElementsByClassName(data.phrase);
 			// for(var i = elements.length - 1; i >= 0; --i) {
