@@ -316,11 +316,11 @@ $(function () {
 
 function registerWithServer() {
 	// Tone.startMobile();
-	causeSound.triggerPitch();
+	// causeSound.triggerPitch();
 	// causeSound.triggerCauseway();
-	socket.emit('addme', {name: "a_user", color: myColor, note: causeSound.pitch, location: myLocation});
-	document.getElementsByClassName("sd")[0].style.display = 'none';
-	document.getElementsByClassName("st")[0].style.display = 'block';
+	socket.emit('addme', {name: "a_user", color: myColor});
+	// document.getElementsByClassName("sd")[0].style.display = 'none';
+	// document.getElementsByClassName("st")[0].style.display = 'block';
 }
 
 socket.on('chat', function(data){
@@ -356,10 +356,9 @@ function scrollto(element){
 }
 
 socket.on('itemback', function(data){
-	console.log("itemback: " + data.phrase);
-
-	var elements = document.getElementsByClassName(data.phrase);
-	elements[0].className += " clicked";
+	// console.log("itemback: " + data.phrase);
+	// var elements = document.getElementsByClassName(data.phrase);
+	// elements[0].className += " clicked";
 });
 
 function clickgo() {
@@ -370,6 +369,7 @@ function clickgo() {
 }
 
 window.onload = function() {
+	registerWithServer();
 	var xhr= new XMLHttpRequest();
 	xhr.open('GET', 'data/score.txt', true);
 	xhr.onreadystatechange= function() {

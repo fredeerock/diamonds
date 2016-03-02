@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Causeway | Theater</title>
+	<title>Theater View</title>
 	<link rel="stylesheet" href="../styles/theater.css">
 	<link href='http://fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
 	<script src="/socket.io/socket.io.js"></script>
@@ -13,9 +13,18 @@
 
 	</div>
 
-<div id="causeway-text"></div>
+<div class="generatedText"></div>
 
 	<script>
+
+	function getRandomColor() {
+	var letters = '0123456789ABCDEF'.split('');
+	var color = '#';
+	for (var i = 0; i < 6; i++ ) {
+	    color += letters[Math.floor(Math.random() * 16)];
+	}
+	return color;
+}
 		// var socket = io.connect('http://emdm.io/', { path: '/sio/socket.io' });
  		// var socket = io.connect('http://emdm.io/sio');
 		// var socket = io.connect('127.0.0.1:8000/');
@@ -27,56 +36,67 @@
 		
 		socket.on('chat', function(data) {
 			console.log(data);
-			document.getElementById("causeway-text").innerHTML= data;
+			// document.getElementById("causeway-text").innerHTML= data;
 
 		});
 
 		socket.on('itemback', function(data){
-			document.getElementById("causeway-text").innerHTML= data.phrase;
+			document.getElementsByClassName('generatedText')[0].innerHTML= data.phrase;
 			console.log("itemback: " + data.phrase);
-			var elements = document.getElementsByClassName(data.phrase);
-			// for(var i = elements.length - 1; i >= 0; --i) {
-				elements[0].className += " clicked";
-				// elements[i].style.color = data.color;
-				// elements[i].style.backgroundColor = data.color;
-				// var elem1 = document.getElementById("elemId");
-				var style = window.getComputedStyle(elements[0], null);
-				var filter = style.webkitFilter.substr(5, 1);
-				console.log(filter);
-				var mf = filter - 1;
-				elements[0].style.webkitFilter = "blur("+mf+"px)";
-				elements[0].style.borderColor = data.color;
-			// }
+
+			var generatedText = document.getElementsByClassName('generatedText')[0];
+			generatedText.classList.add("blurAnimation");
+			generatedText.classList.add("oldgentext");
+			var mf = 10;
+			generatedText.style.webkitFilter = "blur("+mf+"px)";
+			console.log("COLOROOROROROROR", data.color);
+			generatedText.style.color = data.color;
+			
+
+			// var elements = document.getElementsByClassName(data.phrase);
+			// // for(var i = elements.length - 1; i >= 0; --i) {
+			// 	elements[0].className += " clicked";
+			// 	// elements[i].style.color = data.color;
+			// 	// elements[i].style.backgroundColor = data.color;
+			// 	// var elem1 = document.getElementById("elemId");
+			// 	var style = window.getComputedStyle(elements[0], null);
+			// 	var filter = style.webkitFilter.substr(5, 1);
+			// 	console.log(filter);
+			// 	var mf = filter - 1;
+			// 	elements[0].style.webkitFilter = "blur("+mf+"px)";
+			// 	elements[0].style.borderColor = data.color;
+			// // }
 		});
 
 		socket.on('setSection', function(data) {
 			console.log("the section is now: " + data.sect + ":" + data.title);
 			
-			if(data.title == "Welcome") {
-				console.log('yep');
-				scrollto(data.sect);
-			}
+			// if(data.title == "Welcome") {
+			// 	console.log('yep');
+			// 	scrollto(data.sect);
+			// }
 			
-			if(data.title !== undefined){
+			// if(data.title !== undefined){
 				
-				var otherClasses = document.querySelectorAll('.sec'),
-				    i = 0,
-				    l = otherClasses.length;
+			// 	var otherClasses = document.querySelectorAll('.sec'),
+			// 	    i = 0,
+			// 	    l = otherClasses.length;
 
-				for (i; i < l; i++) {
-				    otherClasses[i].style.display = 'none';
-				}
+			// 	for (i; i < l; i++) {
+			// 	    otherClasses[i].style.display = 'none';
+			// 	}
 				
-				try{
-					document.getElementsByClassName("s"+data.sect)[0].style.display = 'block';
-					scrollto(data.sect);
-				}
+			// 	try{
+			// 		document.getElementsByClassName("s"+data.sect)[0].style.display = 'block';
+			// 		scrollto(data.sect);
+			// 	}
 
-				catch(err){
-					console.log(err.message);
-				}
+			// 	catch(err){
+			// 		console.log(err.message);
+			// 	}
 
-			}
+			// }
+
 		});
 
 		window.onload = function() {
@@ -85,7 +105,7 @@
 			xhr.onreadystatechange= function() {
 			    if (this.readyState!==4) return;
 			    if (this.status!==200) return; // or whatever error handling you want
-			    document.getElementById("causeway-text").innerHTML= this.responseText;
+			    document.getElementsByClassName('generatedText')[0].innerHTML= this.responseText;
 			};
 			xhr.send();
 		};

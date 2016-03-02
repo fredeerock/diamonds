@@ -252,6 +252,7 @@ if(cluster.isMaster) {
 		socket.on('addme', function(data) {
 			username = data.name; // autoglobal b/c no var
 			var userColor = data.color;
+			console.log(data);
 			var userNote = data.note;
 			var userLocation = data.location;
 
@@ -447,9 +448,7 @@ if(cluster.isMaster) {
 				var markovJoined = lines.join(' ');
 				// client.lpush("markov", linesJoined, redis.print);
 
-				io.sockets.emit('itemback', {phrase: markovJoined});
-
-
+				io.sockets.emit('itemback', {phrase: markovJoined, color: socket.userColor});
 
 				// client.lindex("markov", 0, function (err, data) {
 				// 	// io.sockets.emit('chat', data);
