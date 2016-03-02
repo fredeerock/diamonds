@@ -339,11 +339,7 @@ if(cluster.isMaster) {
 			            // Update the cursor position for the next scan
 			            cursor = res[0];
 			            // get the SCAN result for this iteration
-			            var keys = res[1];
-
-
-
-			            
+			            var keys = res[1];	     
 
 			            // Remember: more or less than COUNT or no keys may be returned
 			            // See http://redis.io/commands/scan#the-count-option
@@ -353,11 +349,17 @@ if(cluster.isMaster) {
 			            // before the code checking the cursor.
 			            if (keys.length > 0) {
 							if(keys != ''){
-								console.log("hi");
+								// console.log("hi");
 								// console.log(keys);
-								console.log(JSON.parse(keys).title);
+								try {
+									// console.log(JSON.parse(keys).title);
+									scanResults.push(JSON.parse(keys))
+								} catch (err){
+									console.log("error:", err)
+								}
+								// 
 							} else {
-								console.log("nohi");
+								console.log("none");
 							}
 			            	// console.log(keys);
 			                // console.log(JSON.parse(keys).title);
@@ -379,7 +381,15 @@ if(cluster.isMaster) {
 			            // 'An iteration starts when the cursor is set to 0,
 			            // and terminates when the cursor returned by the server is 0.'
 			            if (cursor === '0') {
-			                return console.log('--- Iteration complete ---');
+
+			            	console.log('--- Iteration complete, matches below ---');
+
+			            	scanResults.forEach(function(entry) {
+    							console.log(entry.title);
+							});
+
+			                return;
+
 			            }
 
 			            return sscan();
