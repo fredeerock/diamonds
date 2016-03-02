@@ -325,6 +325,7 @@ if(cluster.isMaster) {
 			
 			var scanResults = [];
 			var cursor = '0';
+			
 			sscan(data);
 			function sscan(data) {
 			    client.sscan(
@@ -340,6 +341,10 @@ if(cluster.isMaster) {
 			            // get the SCAN result for this iteration
 			            var keys = res[1];
 
+
+
+			            
+
 			            // Remember: more or less than COUNT or no keys may be returned
 			            // See http://redis.io/commands/scan#the-count-option
 			            // Also, SCAN may return the same key multiple times
@@ -347,10 +352,18 @@ if(cluster.isMaster) {
 			            // Additionally, you should always have the code that uses the keys
 			            // before the code checking the cursor.
 			            if (keys.length > 0) {
-			                console.log("### Results:", String(JSON.parse(keys).title), "###");
-			                if (scanResults.length<10){
-			                	scanResults.push(JSON.parse(keys).content);
-			                } 
+							if(keys != ''){
+								console.log("hi");
+								// console.log(keys);
+								console.log(JSON.parse(keys).title);
+							} else {
+								console.log("nohi");
+							}
+			            	// console.log(keys);
+			                // console.log(JSON.parse(keys).title);
+			                // if (scanResults.length<10){
+			                	// scanResults.push(JSON.parse(keys));
+			                // } 
 			            }
 
 			            // It's important to note that the cursor and returned keys
@@ -366,7 +379,7 @@ if(cluster.isMaster) {
 			            // 'An iteration starts when the cursor is set to 0,
 			            // and terminates when the cursor returned by the server is 0.'
 			            if (cursor === '0') {
-			                return console.log('### Iteration complete ###');
+			                return console.log('--- Iteration complete ---');
 			            }
 
 			            return sscan();
