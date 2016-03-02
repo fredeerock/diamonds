@@ -38,11 +38,11 @@ function start() {
 	io = io.listen(server);
 	io.adapter(redisAdapter({ host: 'localhost' , port : 6379 }));
 	console.log('Redis adapter started with url: ' + redisUrl);
-	io.on('connection', function(socket) {
-		socket.on('chat message', function(msg) {
-			io.emit('chat message', msg);
-		});
-	});
+	// io.on('connection', function(socket) {
+	// 	socket.on('chat message', function(msg) {
+	// 		io.emit('chat message', msg);
+	// 	});
+	// });
 }
 
 if(cluster.isMaster) {
