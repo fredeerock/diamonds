@@ -240,6 +240,8 @@ if(cluster.isMaster) {
 	var currentSection = 0;		// current section.
 	var theaterID;
 	var conrollerID;
+			var idata;
+
 
 	// ***************************************************
 
@@ -326,12 +328,17 @@ if(cluster.isMaster) {
 			var scanResults = [];
 			var cursor = '0';
 			
-			sscan(data);
-			function sscan(data) {
+			idata = data;
+			console.log("outside data is", data);
+
+			sscan();
+			function sscan() {
+				console.log("fucntion data is", idata);
+
 			    client.sscan(
 			        "itemsset",
 			        cursor,
-			        'MATCH', '*'+data+'*',
+			        'MATCH', '*'+idata+'*',
 			        'COUNT', '10',
 			        function(err, res) {
 			            if (err) throw err;
@@ -348,7 +355,7 @@ if(cluster.isMaster) {
 			            // Additionally, you should always have the code that uses the keys
 			            // before the code checking the cursor.
 			            if (keys.length > 0) {
-							if(keys != ''){
+							// if(keys != ''){
 								// console.log("hi");
 								// console.log(keys);
 								try {
@@ -358,9 +365,9 @@ if(cluster.isMaster) {
 									console.log("error:", err)
 								}
 								// 
-							} else {
-								console.log("none");
-							}
+							// } else {
+								// console.log("none");
+							// }
 			            	// console.log(keys);
 			                // console.log(JSON.parse(keys).title);
 			                // if (scanResults.length<10){
@@ -383,12 +390,13 @@ if(cluster.isMaster) {
 			            if (cursor === '0') {
 
 			            	console.log('--- Iteration complete, matches below ---');
-
+			            	var srCount = 0;
 			            	scanResults.forEach(function(entry) {
-    							console.log(entry.title);
+			            		srCount++;
+    							console.log(srCount+": "+entry.title);
 							});
 
-			                return;
+			                return console.log("--- Done ---");
 
 			            }
 
