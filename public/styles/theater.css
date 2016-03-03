@@ -32,7 +32,9 @@ body {
 }
 
 .newgentext{
-
+  top:10%;
+  width: 60%;
+  position: absolute;
 }
 
 /*#generatedText h1{
