@@ -349,12 +349,12 @@ socket.on('itemback', function(data){
 	// elements[0].className += " clicked";
 });
 
-function clickgo() {
-	var elements = document.getElementsByClassName(this.className);
-	socket.emit('item', elements[0].className.split(" ")[1]);
-	elements[0].className += " clicked";
-	elements[0].style.backgroundColor = myColor;
-}
+// function clickgo() {
+// 	var elements = document.getElementsByClassName(this.className);
+// 	socket.emit('item', elements[0].className.split(" ")[1]);
+// 	elements[0].className += " clicked";
+// 	elements[0].style.backgroundColor = myColor;
+// }
 
 window.onload = function() {
 	registerWithServer();
@@ -368,12 +368,12 @@ window.onload = function() {
 	};
 	xhr.send();
 
-	function addEvents() {
-		var phrases = document.getElementsByClassName('phrase');
-		for (var i = 0; i < phrases.length; i++) {
-			phrases[i].addEventListener("click", clickgo, false);
-		}
-	}
+	// function addEvents() {
+	// 	var phrases = document.getElementsByClassName('phrase');
+	// 	for (var i = 0; i < phrases.length; i++) {
+	// 		phrases[i].addEventListener("click", clickgo, false);
+	// 	}
+	// }
 
 };
 

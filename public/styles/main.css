@@ -46,14 +46,11 @@ span {
     cursor: pointer;
 }
 
-pre {
+.scoreText {
 	margin: 0;
 	font-family: 'Vollkorn', serif;
   color: rgba(255, 255, 255, 0.75);
 	font-size: 1.0em;
-}
-
-.scoreText {
 	white-space: pre;
 }
 
