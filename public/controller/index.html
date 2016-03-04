@@ -22,11 +22,12 @@
 </div>
 <hr />
 <div class="scroll-wrapper">
-	<iframe width="100%" src="http://emdm.io"></iframe>
+	<iframe class="myFrame"></iframe>
 </div>
 <div class="scoreText"></div>
 
 	<script type="text/javascript">
+		document.getElementById("myFrame").src = window.location.host;
 		// var socket = io.connect('130.39.92.112:8000/');
 		var socket = io.connect(window.location.origin , {transports:['websocket']} );
 

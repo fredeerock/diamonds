@@ -9,7 +9,7 @@
 </head>
 <body>
 
-	
+
 
 	<div class="sec sw">
 		<h1>Bound by Digital Countries</h1>
@@ -94,6 +94,7 @@
 
 		socket.on('setSection', function(data) {
 			console.log("the section is now: " + data.sect + ":" + data.title);
+			
 			document.getElementsByClassName('newgentext')[0].innerHTML= data.sect;
 
 			var newgentext = document.getElementsByClassName('newgentext')[0];

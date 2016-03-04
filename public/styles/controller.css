@@ -25,9 +25,10 @@ body {
 
 .scroll-wrapper {
   -webkit-overflow-scrolling: touch;
-    overflow-y: scroll;
-    height: 500px;
-    width:100%;
+  overflow-y: scroll;
+  overflow-x: scroll;
+  height: 500px;
+  width:100%;
 
 
 /*    position: fixed; 

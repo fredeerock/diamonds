@@ -237,7 +237,7 @@ if(cluster.isMaster) {
 	// Global Variables!
 
 	var ioClients = [];		// list of clients who have logged in.  // FIXME: not removing properly
-	var currentSection = 0;		// current section.
+	var currentSection = '';		// current section.
 	var theaterID;
 	var conrollerID;
 	var audioControllerID;
