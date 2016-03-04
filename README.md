@@ -3,11 +3,17 @@ A system for interactive poetry.
 
 ## To-Do
 - [x] TEDx transcript database
-- [ ] Server (app.js)
-- [ ] User
-- [ ] Controller
-- [ ] Theater
-- [ ] Audio
+- [x] Server (app.js)
+- [x] User
+- [x] Controller
+- [x] Theater
+- [x] Audio
+- [ ] save vincent controller clicks to redis database
+- [ ] fix controller so it has split view
+- [ ] stand-alone version
+  - don't show theater view
+  - have overlay ontop of index.html view of the markoving
+- [ ] create a new node app that connects to redis database of vincenent clicks
 
 ## User Interaction 1.0
 - Reader speaks the poem from **controller** site.
