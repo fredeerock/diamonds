@@ -5,7 +5,7 @@
 	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-	<link rel="stylesheet" href="styles/main.css">
+	<link rel="stylesheet" href="/styles/main.css">
 
 	<link href='http://fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
 
@@ -16,10 +16,10 @@
 
 <body>
 	
-	<button script="socket.emit('triggerBeginning')">Beginning</button>
-	<button script="socket.emit('nextChord')">New Chords</button>
-	<button script="socket.emit('triggerDiamonds')">Diamonds in Distopia</button>
-	<button script="socket.emit('triggerEnding')">Ending</button>
+	<button onclick="socket.emit('triggerBeginning')">Beginning</button>
+	<button onclick="socket.emit('nextChord')">New Chords</button>
+	<button onclick="socket.emit('triggerDiamonds')">Diamonds in Distopia</button>
+	<button onclick="socket.emit('triggerEnding')">Ending</button>
 	
 	
 

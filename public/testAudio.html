@@ -9,7 +9,7 @@
 	<meta name="author" content="Jesse Allison">
 	<!-- Date: 2016-02-24 -->
 	
-	<script type="text/javascript" src="scripts/mespeak/mespeak.full.min.js"></script>
+	<script type="text/javascript" src="scripts/mespeak/mespeak.full.js"></script>
 	<script type="text/javascript" src="scripts/Tone.js"></script>
 	
 	
@@ -23,7 +23,11 @@
 		meSpeak.loadConfig("scripts/mespeak/mespeak_config.json");
 		//meSpeak.loadVoice('scripts/mespeak/voices/en/en-us.json');
 		meSpeak.loadVoice('scripts/mespeak/voices/en/en.json');
-		//meSpeak.speak('hello world',{},toneSetup());
+		
+				// Safety. On iOS, if you speak too soon, it gets defered onto a que and nothing works from there on out.
+		if (meSpeak.isConfigLoaded() && meSpeak.isVoiceLoaded('en/en')) {
+			meSpeak.speak('hello world');
+		}
 		
 		
 		
@@ -60,9 +64,9 @@
 			
 			this.synth.triggerAttackRelease("C4", "8n",{} , 0.25);
 			
-			meSpeak.setAudioContext(this.tone.context);
-			meSpeak.speakToNode(this.filt);
-			meSpeak.speak('Diamonds');
+			// meSpeak.setAudioContext(this.tone.context);
+			// meSpeak.speakToNode(this.filt);
+			//meSpeak.speak('Diamonds');
 			
 			this.playPitch = function () {
 				this.synth.triggerAttackRelease(this.tone.midiToNote(this.pitch+12), 5);
@@ -96,12 +100,19 @@
 				var freq = this.tone.midiToNote(this.pitch+12);
 				this.filt.frequency.value = (freq);
 				this.filt2.frequency.value = (freq);
-				meSpeak.speak(text);
+				if (meSpeak.isConfigLoaded() && meSpeak.isVoiceLoaded('en/en')) {
+					meSpeak.speak(text);
+					console.log('Speak! ', text);
+				}
+				console.log('ConfigLoaded? ', meSpeak.isConfigLoaded());
+				console.log('VoiceLoaded? ', meSpeak.isVoiceLoaded('en/en'));
 				this.synth.triggerAttackRelease(freq, "4n",{} , 0.15);
 			};
 		}
 		
 		var dSound = new DiamondSound();
+		meSpeak.setAudioContext(dSound.tone.context);
+		meSpeak.speakToNode(dSound.filt);
 		
 		
 		
@@ -235,7 +246,9 @@
 </head>
 <body>
 
-<button script="Tone.startMobile();">Start</button>
+<button onclick="Tone.startMobile();">Start</button>
+<button onclick="if (meSpeak.isConfigLoaded() && meSpeak.isVoiceLoaded('en/en')) {meSpeak.speak('hello world');}">Speak</button>
+<button onclick="meSpeak.resetQueue();">Reset</button>
 
 <div id="transcript">
 <pre>

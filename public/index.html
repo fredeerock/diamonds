@@ -18,11 +18,22 @@
 </head>
 
 <body>
+	
 		<!-- <div id="container flex-init-setup flex-ppal-setup"> -->
 	    <div id="gradient" />
 	    <!-- </div> -->
+			
+			<div class="sd">
+				<p>Words | <strong>Vincent A. Cellucci</strong></p>
+				<p>Audio | <strong>Jesse Allison</strong></p>
+				<p>Visuals | <strong>Derick Ostrenko</strong></p>
+				<p>UnMute your phone and Turn up your volume.</p>
+				<p>Then tap the button to begin</p>
+				<p><button onclick="Tone.startMobile();document.getElementsByClassName('sd')[0].style.display = 'none';document.getElementsByClassName('scoreText')[0].style.display = 'block';">Start</button></p>
+				<p><em>Tapping is the new snapping!</em></p>
+			</div>
 
-	<p class="scoreText">Vincent A. Cellucci
+	<p class="scoreText" id="scoreText" style="display: none;">Vincent A. Cellucci
 
 Bound by Digital Countries
 
@@ -185,9 +196,8 @@ I start talking about failure
  "I want to touch it for a minute" 
 
 	</p>
-	
-	<button type="button">Submit</button>
-	
+		
+
 
 	<!-- <div id="causeway-text"></div> -->
 
@@ -262,16 +272,16 @@ document.getElementsByTagName("body")[0].style.borderLeft = "15px solid " + myCo
 // seatMap.addEventListener("click", getClickPosition, false);
 
 $(function () {
-	var contents = $('p').text().split(' '),
+	var contents = $('#scoreText').text().split(' '),
 	modText = '';
 
 	for (var i = 0; i < contents.length; i++) {
 		modText += '<span>' + contents[i] + '</span> ';
 	}
 
-	$('p').html(modText);
+	$('#scoreText').html(modText);
 
-	$('p').click(function (e) {
+	$('#scoreText').click(function (e) {
 		target = event.target || event.srcElement;
 
 		if (target.nodeName.toLowerCase() === "span") {
@@ -284,19 +294,19 @@ $(function () {
 		}
 	});
 
-	$('button').click(function() {
-		var selected = [];
-		$('span.underline').each(function() {
-			selected.push($(this).text());
-		});
-	
-		// alert('Selected: ' + selected.join(','));
-		// socket.emit('item', selected.join(','));
-		
-		for (var i=0;i<100;i++){
-			socket.emit('item', '100 boooms');
-		}
-	});
+ // $('button').click(function() {
+ // 	var selected = [];
+ // 	$('span.underline').each(function() {
+ // 		selected.push($(this).text());
+ // 	});
+ // 
+ // 	// alert('Selected: ' + selected.join(','));
+ // 	// socket.emit('item', selected.join(','));
+ // 	
+ // 	for (var i=0;i<100;i++){
+ // 		socket.emit('item', '100 boooms');
+ // 	}
+ // });
 
 });
 
@@ -405,10 +415,10 @@ function getRandomColor() {
 	
 	var self = this;
 	
-	
+	var speakVoice = 'en/en';
 	meSpeak.loadConfig("scripts/mespeak/mespeak_config.json");
 	//meSpeak.loadVoice('scripts/mespeak/voices/en/en-us.json');
-	meSpeak.loadVoice('scripts/mespeak/voices/en/en.json');
+	meSpeak.loadVoice('scripts/mespeak/voices/'+speakVoice+'.json');
 	//meSpeak.speak('hello world',{},toneSetup());
 	
 	
@@ -449,7 +459,9 @@ function getRandomColor() {
 		
 		meSpeak.setAudioContext(this.tone.context);
 		meSpeak.speakToNode(this.filt);
-		meSpeak.speak('Diamonds');
+		// if (meSpeak.isConfigLoaded() && meSpeak.isVoiceLoaded(speakVoice)) {
+		// meSpeak.speak('Diamonds');
+		// }
 		
 		this.playPitch = function () {
 			this.synth.triggerAttackRelease(this.tone.midiToNote(this.pitch+12), 5);
@@ -487,7 +499,10 @@ function getRandomColor() {
 			var freq = this.tone.midiToNote(this.pitch+12);
 			this.filt.frequency.value = (freq);
 			this.filt2.frequency.value = (freq);
-			meSpeak.speak(text);
+					// check for safety - iOS will fail if you try to say something and can't
+			if (meSpeak.isConfigLoaded() && meSpeak.isVoiceLoaded(speakVoice)) {
+				meSpeak.speak(text);
+			}
 			this.synth.triggerAttackRelease(freq, "4n",{} , 0.15);
 		};
 	}
@@ -498,7 +513,6 @@ function getRandomColor() {
 		
 </script>
 	
-<button type="button">Test 100</button>
 
 </body>
 </html>
