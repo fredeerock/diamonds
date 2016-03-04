@@ -181,27 +181,27 @@ if(cluster.isMaster) {
 	// ***************************************************
 	//	OSC Setup for sending (and receiving) OSC (to Max)
 
-	var osc = require('node-osc');
+	// var osc = require('node-osc');
 
-	var oscReceiverIP = '167.96.127.8';
+	// var oscReceiverIP = '167.96.127.8';
 
 		// oscReceiver is used for receiving osc messages (from Max, and friends!)
-	var oscReceiver = new osc.Server(7746, oscReceiverIP);
+	// var oscReceiver = new osc.Server(7746, oscReceiverIP);
 
-		oscReceiver.on("message", function (msg, rinfo) {
-			// console.log("OSC message:");
-			// console.log(msg);
-
-			// Setup messages to receive here //
-			if(msg[0] = "/goToSection") {
-				currentSection = msg[1];
-				shareSection(currentSection);
-			}
-
-		});
+	 // oscReceiver.on("message", function (msg, rinfo) {
+	 // 	// console.log("OSC message:");
+	 // 	// console.log(msg);
+   //
+	 // 	// Setup messages to receive here //
+	 // 	if(msg[0] = "/goToSection") {
+	 // 		currentSection = msg[1];
+	 // 		shareSection(currentSection);
+	 // 	}
+   //
+	 // });
 
 	// oscSend is used to send osc messages (to Max, and freinds!)
-	var oscSend = new osc.Client(oscReceiverIP, 7745);
+	// var oscSend = new osc.Client(oscReceiverIP, 7745);
 
 	// ***************************************************
 
@@ -240,6 +240,7 @@ if(cluster.isMaster) {
 	var currentSection = 0;		// current section.
 	var theaterID;
 	var conrollerID;
+	var audioControllerID;
 	var idata; //replace this eventually. see note below on sscan().
 
 	// ***************************************************
@@ -264,6 +265,11 @@ if(cluster.isMaster) {
 			if(username == "controller"){
 				controllerID = socket.id;
 				console.log("Hello Controller: " + controllerID);
+			}
+			
+			if(username == "audio_controller"){
+				audioControllerID = socket.id;
+				console.log("Hello Audio Controller: " + audioControllerID);
 			}
 
 			if(username == "a_user") {
@@ -482,6 +488,25 @@ if(cluster.isMaster) {
 			// console.log("slider! " + data);
 			// oscSend.send('/slider', socket.username, data);
 		});
+		
+		socket.on('triggerBeginning', function(data) {
+			io.sockets.emit('triggerBeginning', 1);
+		});
+		
+		
+		socket.on('nextChord', function(data) {
+			//io.sockets.emit('nextChord');
+			socket.broadcast.emit('nextChord');
+		});
+		
+		socket.on('triggerDiamonds', function(data) {
+			// io.sockets.emit('triggerDiamonds');
+			socket.broadcast.emit('triggerDiamonds', 1);
+		});
+		
+		socket.on('triggerEnding', function(data) {
+			io.sockets.emit('triggerEnding');
+		});
 
 
 		socket.on('section', function(data) {
@@ -501,7 +526,7 @@ if(cluster.isMaster) {
 			var title = getSection(sect);
 			io.sockets.emit('setSection', {sect: sect, title: title});
 			// oscSend.send('/setSection', sect, title);
-			oscSend.send('/causeway/currentSection', sect);
+			// oscSend.send('/causeway/currentSection', sect);
 
 		};
 
