@@ -1,9 +1,15 @@
+html {
+  height: 100%;
+}
+
+
 body{
    padding: 0px;
    margin: 0px;
+   height: 100%;
 /*   position: relative;
    width: 100%;*/
- }
+}
 
 /* .flex-init-setup {
      display: -webkit-box;
@@ -20,6 +26,16 @@ body{
      -moz-justify-content: center;
      justify-content: center;
  }*/
+
+.welcomeText {
+  font-family: 'Vollkorn', serif;
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  text-align: center;
+}
 
 #gradient {
   width: 100%;
@@ -52,6 +68,7 @@ span {
   color: rgba(255, 255, 255, 0.75);
 	font-size: 1.0em;
 	white-space: pre;
+  display: none;
 }
 
 .sec{
