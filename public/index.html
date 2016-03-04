@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>Diamonds</title>
 	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> -->
 
 	<link rel="stylesheet" href="styles/main.css">
 
@@ -17,20 +17,65 @@
 	<script type="text/javascript" src="scripts/Tone.js"></script>
 </head>
 
-<body>		
-			<div class="welcomeText">
-				<h1>Bound by Digital Countries</h1>
-				<p>Words | <strong>Vincent A. Cellucci</strong></p>
-				<p>Audio | <strong>Jesse Allison</strong></p>
-				<p>Visuals | <strong>Derick Ostrenko</strong></p>
-				<p>UnMute your phone and Turn up your volume.</p>
-				<p>Then tap the button to begin.</p>
-				<p><button onclick="Tone.startMobile();document.getElementsByClassName('welcomeText')[0].style.display = 'none';document.getElementsByClassName('scoreText')[0].style.display = 'block';">Start</button></p>
-				<p><em>Tapping is the new snapping!</em></p>
-			</div>
+<body>	
+	<div class="wrapper">	
+	<div class="welcomeText">
+		<h1>Bound by Digital Countries</h1>
+		<p>Words | <strong>Vincent A. Cellucci</strong></p>
+		<p>Audio | <strong>Jesse Allison</strong></p>
+		<p>Visuals | <strong>Derick Ostrenko</strong></p>
+		<p>UnMute your phone and Turn up your volume.</p>
+		<p>Then tap the button to begin.</p>
+		<p><button style="height:200px;width:200px" onclick="Tone.startMobile();document.getElementsByClassName('welcomeText')[0].style.display = 'none';document.getElementsByClassName('scoreText')[0].style.display = 'block';"><span style="font-size:3em">Start</span></button></p>
+		<p><em>Tapping is the new snapping!</em></p>
+	</div>
 
-			<div class="scoreText"></div>
+	<div class="scoreText"></div>
 <script>
+
+// (function($) {
+
+//     function getTextWidth($element) {
+//         var tester = $("<div/>").text($element.text())
+// 			.css({ "position": "absolute", "float": "left", "white-space": "nowrap", "visibility": "hidden", "font": $element.css("font"), "text-transform": $element.css("text-transform"), "letter-spacing": $element.css("letter-spacing") })
+// 			.appendTo($element.parent()),
+// 			width = tester.innerWidth();
+//         tester.remove();
+//         return width;
+//     }
+
+//     function AutoShrinker($element) {
+//         this.$element = $element;
+//         this.$parent = $element.parent();
+//         this.initialFontSize = parseFloat($element.css("fontSize"));
+//         this.currentFontSize = this.initialFontSize;
+//         this.leftMarginRatio = parseFloat($element.css("marginLeft")) / this.initialFontSize;
+//         this.resize = function() {
+//             var maxWidth = this.$parent.width(),
+// 				newSize = this.currentFontSize * (maxWidth / getTextWidth(this.$element));
+//             newSize = newSize > this.initialFontSize ? this.initialFontSize : newSize;
+//             this.$element.css({
+//                 "fontSize": newSize,
+//                 "marginLeft": newSize * this.leftMarginRatio
+//             });
+//             this.currentFontSize = newSize;
+//         };
+//     }
+
+//     $.fn.autoshrink = function() {
+//         return this.each(function() {
+//             var shrinker, $this = $(this);
+//             $this.data("autoshrinker", shrinker = new AutoShrinker($this));
+//             shrinker.resize();
+//             $(window).on("resize", function() {
+//                 shrinker.resize();
+//             });
+//         });
+//     };
+// })(jQuery);
+
+// $(".welcomeText").autoshrink();
+
 
 var colors = new Array(
   [62,35,255],
@@ -71,7 +116,7 @@ function updateGradient() {
 	var b2 = Math.round(istep * c1_0[2] + step * c1_1[2]);
 	var color2 = "rgb("+r2+","+g2+","+b2+")";
 
-	$('html')
+	$('body')
 	.css({background: "-webkit-gradient(linear, left top, right top, from("+color1+"), to("+color2+"))"})
 	.css({background: "-moz-linear-gradient(left, "+color1+" 0%, "+color2+" 100%)"});
 	  
@@ -97,7 +142,6 @@ var socket = io.connect(window.location.origin , {transports:['websocket']} );
 var myColor = getRandomColor();
 var myLocation = [0.5, 0.5];	// Default centered
 
-document.getElementsByTagName("body")[0].style.borderLeft = "15px solid " + myColor;
 // seatMap.addEventListener("click", getClickPosition, false);
 
 // $(function () {
@@ -121,6 +165,8 @@ $('.scoreText').click(function (e) {
 	
 		console.log("text:",text);
 		$(e.target).toggleClass('underline');
+		// $(e.target).style.color=myColor;
+		// console.log(myColor);
 		dSound.speak(text);
 		socket.emit('item', text);
 	}
@@ -200,6 +246,8 @@ socket.on('triggerEnding', function(data) {
 	dSound.playEnding();
 });
 
+
+
 window.onload = function() {
 	registerWithServer();
 	var xhr= new XMLHttpRequest();
@@ -209,7 +257,10 @@ window.onload = function() {
 	    if (this.status!==200) return;
 	    var scoreText = document.getElementsByClassName("scoreText")[0];
 	    scoreText.innerHTML= this.responseText;
+	    // $(".scoreText").textfill();
 	    actOnText();
+	    document.getElementsByTagName("html")[0].style.borderLeft = "15px solid " + myColor;
+
 	    // .style.display = 'block'
 	    // addEvents();
 	};
@@ -223,6 +274,11 @@ window.onload = function() {
 	// }
 
 };
+
+$(window).resize(function() {
+		    // document.getElementsByTagName("body")[0].style.borderLeft = "15px solid " + myColor;
+		    // console.log("resized");
+});
 
 function getRandomColor() {
 	var letters = '0123456789ABCDEF'.split('');
@@ -353,6 +409,6 @@ function getRandomColor() {
 		
 </script>
 	
-
+</div>
 </body>
 </html>

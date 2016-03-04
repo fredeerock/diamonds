@@ -13,14 +13,17 @@
 <body>
 
 <div class="generatedText"></div>
+<div class="buttons">
 <hr />
-<div class="generatedText">
 <button onclick="socket.emit('triggerBeginning')">Beginning</button>
 <button onclick="socket.emit('triggerUtopalypse')">Utopia is our Apocalypse</button>
 <button onclick="socket.emit('triggerDiamonds')">Diamonds in Distopia</button>
 <button onclick="socket.emit('triggerEnding')">Ending</button>
 </div>
-
+<hr />
+<div class="scroll-wrapper">
+	<iframe width="100%" height="500px" src="http://tedxlsu.emdm.io"></iframe>
+</div>
 <div class="scoreText"></div>
 
 	<script type="text/javascript">
@@ -44,29 +47,29 @@
 			console.log("itemback: " + data.phrase);
 			currentPhrase = data.phrase;
 			var generatedText = document.getElementsByClassName('generatedText')[0];
-			generatedText.classList.add("blurAnimation");
+			// generatedText.classList.add("blurAnimation");
 			generatedText.classList.add("oldgentext");
 			var mf = 0;
 			generatedText.style.webkitFilter = "blur("+mf+"px)";
 			// console.log("COLOROOROROROROR", data.color);
 			generatedText.style.color = "black";
-			generatedText.style.fontSize = "2em";
+			// generatedText.style.fontSize = "2em";
 			var headerHeight = $('.generatedText').outerHeight();
 			$('.scoreText').css('top',headerHeight);
 			var st = document.getElementsByClassName('scoreText')[0];
-			    // st.style.whiteSpace = "pre";
-			    st.style.overflowX = "scroll";
-			    st.style.overflowY = "scroll";
+		    // st.style.whiteSpace = "pre";
+		    // st.style.overflowX = "scroll";
+		    // st.style.overflowY = "scroll";
 			addEvents();
 			
 		});
 
-		function scrollto(element){ 
-			var ele = document.getElementsByClassName(element)[0];
-			if (!!ele) {
-				window.scrollTo(ele.offsetLeft,ele.offsetTop);
-			}
-		}
+		// function scrollto(element){ 
+		// 	var ele = document.getElementsByClassName(element)[0];
+		// 	if (!!ele) {
+		// 		window.scrollTo(ele.offsetLeft,ele.offsetTop);
+		// 	}
+		// }
 
 		function clickgo() {
 			// var elements = document.getElementsByClassName(this.className);
@@ -83,7 +86,7 @@
 			xhr.onreadystatechange= function() {
 			    if (this.readyState!==4) return;
 			    if (this.status!==200) return; // or whatever error handling you want
-			    document.getElementsByClassName('scoreText')[0].innerHTML= this.responseText;
+			    // document.getElementsByClassName('scoreText')[0].innerHTML= this.responseText;
 			    var st = document.getElementsByClassName('scoreText')[0];
 			    // st.style.whiteSpace = "pre";
 			    // st.style.overflowX = "scroll";

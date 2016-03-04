@@ -15,6 +15,7 @@ body {
 
 .generatedText {
   /*font-size: 1.5em;*/
+  position: relative;
   width: 60%;
   margin: 0 auto;
   margin-top: 10%;
@@ -32,8 +33,10 @@ body {
 }
 
 .newgentext{
-  top:10%;
+  /*top:10%;*/
+  /*margin: 0 auto;*/
   width: 60%;
+  margin-top: 10%;
   position: absolute;
 }
 

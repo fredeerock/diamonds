@@ -2,8 +2,7 @@ body {
 /*	display: flex;
 	align-items: center;
 	justify-content: center;*/
-	font-family: 'Vollkorn', serif;
-	font-size: 1.0em;
+	/*font-size: 1.0em;*/
 /*	background-color: black;
 	color: white;*/
 
@@ -14,11 +13,29 @@ body {
 }
 
 .generatedText {
-  font-size: 1.0em;
-  width: 60%;
-  margin: 0 auto;
-  margin-top: 10%;
+  font-family: 'Vollkorn', serif;
+  font-size: 1.5em;
+  width: 100%;
+  padding: 10px;
+  /*margin: 0 auto;*/
+  /*margin-top: 10%;*/
 
+}
+
+
+.scroll-wrapper {
+  -webkit-overflow-scrolling: touch;
+    overflow-y: scroll;
+    height: 500px;
+    width:100%;
+
+  /* important:  dimensions or positioning here! */
+}
+
+.scroll-wrapper iframe {
+  height: 100%;
+  width: 100%;
+  /* nada! */
 }
 
 .scoreText{

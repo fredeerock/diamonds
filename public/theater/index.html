@@ -9,8 +9,10 @@
 </head>
 <body>
 
-	<div class="sec sw">
+	
 
+	<div class="sec sw">
+		<h1>Bound by Digital Countries</h1>
 	</div>
 
 <div class="generatedText"></div>
@@ -57,6 +59,8 @@
 		// window.requestAnimationFrame(step);
 
 		socket.on('itemback', function(data){
+
+			document.getElementsByClassName('sw')[0].style.display="none";
 			
 			// if(timer){
 				document.getElementsByClassName('generatedText')[0].innerHTML= data.phrase;
@@ -64,7 +68,7 @@
 				console.log("itemback: " + data.phrase);
 
 				var generatedText = document.getElementsByClassName('generatedText')[0];
-				generatedText.classList.add("blurAnimation");
+				// generatedText.classList.add("blurAnimation");
 				generatedText.classList.add("oldgentext");
 				var mf = 10;
 				generatedText.style.webkitFilter = "blur("+mf+"px)";
@@ -92,13 +96,14 @@
 			console.log("the section is now: " + data.sect + ":" + data.title);
 			document.getElementsByClassName('newgentext')[0].innerHTML= data.sect;
 
-			var generatedText = document.getElementsByClassName('newgentext')[0];
+			var newgentext = document.getElementsByClassName('newgentext')[0];
 			// generatedText.classList.add("blurAnimation");
 			// generatedText.classList.add("newgentext");
 			// var mf = 0;
 			// generatedText.style.webkitFilter = "blur("+mf+"px)";
 			// console.log("COLOROOROROROROR", data.color);
-			generatedText.style.color = data.color;
+			newgentext.style.color = data.color;
+			// newgentext.style.classList.add("newgentext");
 			
 			// if(data.title == "Welcome") {
 			// 	console.log('yep');
@@ -128,24 +133,24 @@
 
 		});
 
-		window.onload = function() {
-			var xhr= new XMLHttpRequest();
-			xhr.open('GET', '../data/score.txt', true);
-			xhr.onreadystatechange= function() {
-			    if (this.readyState!==4) return;
-			    if (this.status!==200) return; // or whatever error handling you want
-			    document.getElementsByClassName('generatedText')[0].innerHTML= this.responseText;
-			};
-			xhr.send();
-		};
+		// window.onload = function() {
+		// 	// var xhr= new XMLHttpRequest();
+		// 	// xhr.open('GET', '../data/score.txt', true);
+		// 	// xhr.onreadystatechange= function() {
+		// 	//     if (this.readyState!==4) return;
+		// 	//     if (this.status!==200) return; // or whatever error handling you want
+		// 	//     document.getElementsByClassName('generatedText')[0].innerHTML= this.responseText;
+		// 	// };
+		// 	// xhr.send();
+		// };
 
-		function scrollto(element){
-		console.log("scrolling to:"+element);
-		     var ele = document.getElementsByClassName("s"+element)[0];
-		     if (ele) {
-		     	window.scrollTo(0, ele.offsetTop);
-		     }
-		}
+		// function scrollto(element){
+		// console.log("scrolling to:"+element);
+		//      var ele = document.getElementsByClassName("s"+element)[0];
+		//      if (ele) {
+		//      	window.scrollTo(0, ele.offsetTop);
+		//      }
+		// }
 
 		// function scrollto(element) {
 		// 		var ele = document.getElementsByClassName("s"+element)[0];
