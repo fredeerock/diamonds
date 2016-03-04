@@ -495,13 +495,15 @@ if(cluster.isMaster) {
 		
 		
 		socket.on('nextChord', function(data) {
-			//io.sockets.emit('nextChord');
-			socket.broadcast.emit('nextChord');
+			io.sockets.emit('nextChord');
+		});
+		
+		socket.on('triggerUtopalypse', function(data) {
+			io.sockets.emit('triggerUtopalypse');
 		});
 		
 		socket.on('triggerDiamonds', function(data) {
-			// io.sockets.emit('triggerDiamonds');
-			socket.broadcast.emit('triggerDiamonds', 1);
+			io.sockets.emit('triggerDiamonds');
 		});
 		
 		socket.on('triggerEnding', function(data) {
