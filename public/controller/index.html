@@ -4,13 +4,17 @@
 	<meta charset="UTF-8">
 	<title>Causeway | Controller</title>
 	<script src="/socket.io/socket.io.js"></script>
-	<link rel="stylesheet" href="styles/controller.css">
+	<link rel="stylesheet" href="../styles/controller.css">
 	<link href='http://fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
 
 </head>
 <body>
 
 <div class="generatedText"></div>
+<hr />
+<div class="scoreText"></div>
 
 	<script type="text/javascript">
 		// var socket = io.connect('130.39.92.112:8000/');
@@ -40,6 +44,12 @@
 			// console.log("COLOROOROROROROR", data.color);
 			generatedText.style.color = "black";
 			generatedText.style.fontSize = "2em";
+			var headerHeight = $('.generatedText').outerHeight();
+			$('.scoreText').css('top',headerHeight);
+			var st = document.getElementsByClassName('scoreText')[0];
+			    // st.style.whiteSpace = "pre";
+			    st.style.overflowX = "scroll";
+			    st.style.overflowY = "scroll";
 			addEvents();
 			
 		});
@@ -66,7 +76,13 @@
 			xhr.onreadystatechange= function() {
 			    if (this.readyState!==4) return;
 			    if (this.status!==200) return; // or whatever error handling you want
-			    document.getElementsByClassName('generatedText')[0].innerHTML= this.responseText;
+			    document.getElementsByClassName('scoreText')[0].innerHTML= this.responseText;
+			    var st = document.getElementsByClassName('scoreText')[0];
+			    // st.style.whiteSpace = "pre";
+			    // st.style.overflowX = "scroll";
+			    // st.style.overflowY = "scroll";
+			    
+			      
 			};
 			xhr.send();
 		};

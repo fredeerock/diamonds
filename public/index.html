@@ -18,22 +18,11 @@
 </head>
 
 <body>
+		<!-- <div id="container flex-init-setup flex-ppal-setup"> -->
 	    <div id="gradient" />
+	    <!-- </div> -->
 
-		<div class="sec sw">
-
-		<!-- <h1 onclick="causeSound.triggerCauseway();"><span class="mainTitle">Causeway</span></h1> -->			
-		<div class="sd">
-
-		</div>
-
-		<div class="st" style="display: none;">
-
-		</div>
-
-	</div>
-	<pre>
-	<p>Vincent A. Cellucci
+	<p class="scoreText">Vincent A. Cellucci
 
 Bound by Digital Countries
 
@@ -196,7 +185,6 @@ I start talking about failure
  "I want to touch it for a minute" 
 
 	</p>
-	</pre>
 	
 	<button type="button">Submit</button>
 	
@@ -287,7 +275,10 @@ $(function () {
 		target = event.target || event.srcElement;
 
 		if (target.nodeName.toLowerCase() === "span") {
-			var text = $(e.target).text();		
+			var text = $(e.target).text();
+		
+			// FIXME: Filter out a touch in blank space!
+		
 			console.log("text:",text);
 			$(e.target).toggleClass('underline');
 			dSound.speak(text);
@@ -345,29 +336,12 @@ socket.on('setSection', function(data) {
 	
 });
 
-socket.on('triggerBeginning', function(data) {
-	dSound.playKepler();
-});
-
-socket.on('nextChord', function(data) {
-	dSound.nextChord();
-});
-
-socket.on('triggerDiamonds', function(data) {
-	dSound.playDiamonds();
-});
-
-socket.on('triggerEnding', function(data) {
-	dSound.playEnding();
-});
-
-
-function scrollto(element){ 
-	var ele = document.getElementsByClassName("s"+element)[0];
-    if (ele) {
-    	window.scrollTo(0, ele.offsetTop);
-    }
-}
+// function scrollto(element){ 
+// 	var ele = document.getElementsByClassName("s"+element)[0];
+//     if (ele) {
+//     	window.scrollTo(0, ele.offsetTop);
+//     }
+// }
 
 socket.on('itemback', function(data){
 	// console.log("itemback: " + data.phrase);
@@ -375,12 +349,12 @@ socket.on('itemback', function(data){
 	// elements[0].className += " clicked";
 });
 
-function clickgo() {
-	var elements = document.getElementsByClassName(this.className);
-	socket.emit('item', elements[0].className.split(" ")[1]);
-	elements[0].className += " clicked";
-	elements[0].style.backgroundColor = myColor;
-}
+// function clickgo() {
+// 	var elements = document.getElementsByClassName(this.className);
+// 	socket.emit('item', elements[0].className.split(" ")[1]);
+// 	elements[0].className += " clicked";
+// 	elements[0].style.backgroundColor = myColor;
+// }
 
 window.onload = function() {
 	registerWithServer();
@@ -394,12 +368,12 @@ window.onload = function() {
 	};
 	xhr.send();
 
-	function addEvents() {
-		var phrases = document.getElementsByClassName('phrase');
-		for (var i = 0; i < phrases.length; i++) {
-			phrases[i].addEventListener("click", clickgo, false);
-		}
-	}
+	// function addEvents() {
+	// 	var phrases = document.getElementsByClassName('phrase');
+	// 	for (var i = 0; i < phrases.length; i++) {
+	// 		phrases[i].addEventListener("click", clickgo, false);
+	// 	}
+	// }
 
 };
 
@@ -412,6 +386,56 @@ function getRandomColor() {
 	return color;
 }
 
+var CauseSound = function () {
+	this.tone = new Tone();
+	this.synth = new Tone.SimpleSynth({
+		"oscillator" : {
+			"type" : "sine"
+	 },
+	 "envelope" : {
+	 	"attack" : 2.0,
+		"decay" : 0.5,
+		"sustain" : 0.8,
+		"release" : 2.0
+	 }
+	}).toMaster();
+	
+	this.player = new Tone.Player("data/wavs/001-Causeway.wav").toMaster();
+	this.player2 = new Tone.Player("data/wavs/204-who%20had%20brought%20this%20one%20.wav").toMaster();
+
+	
+	this.pitchCollection = [55, 57, 59, 61, 62, 64, 66, 67, 68, 69, 71, 73, 75, 76, 78, 80, 82, 83];
+	
+	this.pitch = this.pitchCollection[Math.floor(Math.random() * (this.pitchCollection.length))];
+	
+	
+	this.playPitch = function () {
+		this.synth.triggerAttackRelease(this.tone.midiToNote(this.pitch+12), 5);
+	};
+
+	this.triggerPitch = function () {
+		this.synth.triggerAttackRelease(this.tone.midiToNote(this.pitch+12), 5);
+		socket.emit('triggerPitch', causeSound.pitch);
+	};
+	
+	this.playCauseway = function() {
+		this.player.start();
+	};
+
+	this.playBrought = function() {
+		this.player2.start();
+	};
+	
+	this.triggerCauseway = function() {
+		this.synth.triggerAttackRelease(this.tone.midiToNote(this.pitch+12), 5);
+		this.player.start();
+		socket.emit('triggerCauseway', causeSound.pitch);
+		
+		var elements = document.getElementsByClassName("mainTitle");
+		// elements[0].className += " clicked";
+		elements[0].style.backgroundColor = myColor;
+	};
+};
 
 	// Add Chords, Progression, feedback, comb filtering, shimmer!
 	
@@ -445,7 +469,6 @@ function getRandomColor() {
 
 		this.playerDiamonds = new Tone.Player("data/diamonds_in_distopia.mp3").toMaster();
 		this.playerKepler = new Tone.Player("data/Kepler_Star.mp3").toMaster();
-		this.playerEnding = new Tone.Player("data/Ending_for_a_minute.mp3").toMaster();
 
 		this.gainy = new Tone.Gain().toMaster();
 		this.filt2 = new Tone.Filter(this.tone.midiToNote(this.pitch+12), "bandpass").connect(this.gainy);
@@ -478,10 +501,6 @@ function getRandomColor() {
 
 		this.playKepler = function() {
 			this.playerKepler.start();
-		};
-		
-		this.playEnding = function() {
-			this.playerEnding.start();
 		};
 		
 		this.triggerDiamonds = function() {
