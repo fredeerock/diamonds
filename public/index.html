@@ -26,7 +26,7 @@
 		<p>Visuals | <strong>Derick Ostrenko</strong></p>
 		<p>UnMute your phone and Turn up your volume.</p>
 		<p>Then tap the button to begin.</p>
-		<p><button style="height:200px;width:200px" onclick="Tone.startMobile();document.getElementsByClassName('welcomeText')[0].style.display = 'none';document.getElementsByClassName('scoreText')[0].style.display = 'block';"><span style="font-size:3em">Start</span></button></p>
+		<p><a href="#" class="myButton" onclick="Tone.startMobile();document.getElementsByClassName('welcomeText')[0].style.display = 'none';document.getElementsByClassName('scoreText')[0].style.display = 'block';">Start</a></p>
 		<p><em>Tapping is the new snapping!</em></p>
 	</div>
 
@@ -163,10 +163,10 @@ $('.scoreText').click(function (e) {
 	if (target.nodeName.toLowerCase() === "span") {
 		var text = $(e.target).text();
 	
-		console.log("text:",text);
-		$(e.target).toggleClass('underline');
-		// $(e.target).style.color=myColor;
-		// console.log(myColor);
+		// console.log("text:",text);
+		// $(e.target).toggleClass('underline');
+		$(e.target)[0].style.backgroundColor=myColor;
+		// console.log($(e.target)[0]);
 		dSound.speak(text);
 		socket.emit('item', text);
 	}
@@ -259,7 +259,7 @@ window.onload = function() {
 	    scoreText.innerHTML= this.responseText;
 	    // $(".scoreText").textfill();
 	    actOnText();
-	    document.getElementsByTagName("html")[0].style.borderLeft = "15px solid " + myColor;
+	    document.getElementsByClassName("scoreText")[0].style.borderLeft = "15px solid " + myColor;
 
 	    // .style.display = 'block'
 	    // addEvents();

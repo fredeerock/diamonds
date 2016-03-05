@@ -11,20 +11,18 @@
 
 </head>
 <body>
-
-<div class="generatedText"></div>
 <div class="buttons">
-<hr />
-<button onclick="socket.emit('triggerBeginning')">Beginning</button>
-<button onclick="socket.emit('triggerUtopalypse')">Utopia is our Apocalypse</button>
-<button onclick="socket.emit('triggerDiamonds')">Diamonds in Distopia</button>
-<button onclick="socket.emit('triggerEnding')">Ending</button>
+	<button onclick="socket.emit('triggerBeginning')">Beginning</button>
+	<button onclick="socket.emit('triggerUtopalypse')">Utopia is our Apocalypse</button>
+	<button onclick="socket.emit('triggerDiamonds')">Diamonds in Distopia</button>
+	<button onclick="socket.emit('triggerEnding')">Ending</button>
 </div>
-<hr />
+<div class="generatedText stuff"></div>
+
 <div class="scroll-wrapper">
-	<iframe src="" class="myFrame"></iframe>
+	<!-- <iframe src="" class="myFrame"></iframe> -->
 </div>
-<div class="scoreText"></div>
+<div class="scoreText stuff"></div>
 
 	<script type="text/javascript">
 		
@@ -87,23 +85,22 @@
 			xhr.onreadystatechange= function() {
 			    if (this.readyState!==4) return;
 			    if (this.status!==200) return; // or whatever error handling you want
-			    // document.getElementsByClassName('scoreText')[0].innerHTML= this.responseText;
+			    document.getElementsByClassName('scoreText')[0].innerHTML= this.responseText;
 			    var st = document.getElementsByClassName('scoreText')[0];
 			    // st.style.whiteSpace = "pre";
 			    // st.style.overflowX = "scroll";
 			    // st.style.overflowY = "scroll";
 
-			    
-			      
 			};
 			xhr.send();
+			// document.getElementsByClassName("myFrame")[0].src="http://"+window.location.host;
 
 		};
 
-		document.addEventListener('DOMContentLoaded', function(event){
-			console.log("dom ready", window.location.host);
-			document.getElementsByClassName("myFrame")[0].src="http://"+window.location.host;
-		}, false);
+		// document.addEventListener('DOMContentLoaded', function(event){
+		// 	console.log("dom ready", window.location.host);
+
+		// }, false);
 
 		function addEvents() {
 			document.getElementsByClassName('generatedText')[0].addEventListener("click", clickgo, false);
@@ -112,12 +109,10 @@
 				// }
 			}
 
-			$(window).bind(
-			  'touchmove',
-			   function(e) {
-			    e.preventDefault();
-			  }
-			);
+		// $(window).bind('touchmove', function(e) {
+		// 	e.preventDefault();
+		// 	}
+		// );
 
 		// window.onload = function() {
 

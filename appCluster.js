@@ -19,7 +19,7 @@ var redis = require('redis');
 var redisAdapter = require('socket.io-redis');
 
 var port = process.env.PORT || 8000;
-var workers = process.env.WORKERS || require('os').cpus().length;
+var workers = process.env.WORKERS || require('os').cpus().length*2;
 var redisUrl = process.env.REDISTOGO_URL || 'redis://127.0.0.1:6379';
 
 var app = express();
