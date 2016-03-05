@@ -49,6 +49,8 @@
 
 		function nexPhraseClick() {
 			document.getElementsByClassName('generatedText')[0].innerHTML= pArray[pACount];
+			currentPhrase = pArray[pACount];
+
 			console.log("pACount", pACount);
 			if (pACount < pArray.length) {
 				pACount++;
@@ -70,7 +72,7 @@
 			}
 			// pArray[pACount] = data.phrase;
 
-			currentPhrase = data.phrase;
+			// currentPhrase = data.phrase;
 
 			var generatedText = document.getElementsByClassName('generatedText')[0];
 			// generatedText.classList.add("blurAnimation");
