@@ -9,14 +9,18 @@
 </head>
 <body>
 
-<div class="url">emdm.io</div>
+	<div class="url">emdm.io</div>
 
-	<div class="sec sw">
-		<h1>Bound by Digital Countries</h1>
+	<div class="sw">
+		<div class="title">
+			<h1>Bound by Digital Countries</h1>
+		</div>
 	</div>
-
-<div class="generatedText"></div>
-<div class="newgentext"></div>
+	
+	<div class="allText">
+		<div class="generatedText"></div>
+		<div class="newgentext"></div>
+	</div>
 
 	<script>
 
@@ -69,7 +73,7 @@
 
 				var generatedText = document.getElementsByClassName('generatedText')[0];
 				// generatedText.classList.add("blurAnimation");
-				generatedText.classList.add("oldgentext");
+				// generatedText.classList.add("oldgentext");
 				var mf = 10;
 				generatedText.style.webkitFilter = "blur("+mf+"px)";
 				// console.log("COLOROOROROROROR", data.color);
@@ -103,7 +107,9 @@
 			// var mf = 0;
 			// generatedText.style.webkitFilter = "blur("+mf+"px)";
 			// console.log("COLOROOROROROROR", data.color);
-			newgentext.style.color = data.color;
+			
+			// newgentext.style.color = data.color; //MAYBE USE THIS!
+
 			// newgentext.style.classList.add("newgentext");
 			
 			// if(data.title == "Welcome") {

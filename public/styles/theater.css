@@ -1,3 +1,8 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
 body {
 /*	display: flex;
 	align-items: center;
@@ -9,6 +14,20 @@ body {
 
 }
 
+.title {
+  height: 10em;
+  position: relative; 
+}
+
+.title h1{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+}
+
 .url{
   position: absolute;
   font-size: 0.35em;
@@ -18,53 +37,30 @@ body {
   right: 0;
 }
 
-#generatedText {
-
+.allText{
+  height: 10em;
+  position: relative; 
+  
 }
 
-.generatedText {
-  /*font-size: 1.5em;*/
-  position: relative;
-  width: 60%;
-  margin: 0 auto;
-  margin-top: 10%;
-
-}
-
-.scoreText{
-/*  white-space: pre;
-  overflow-x:scroll;
-  overflow-y:scroll;*/
-}
-
-.oldgentext{
-  /*blur(10px);*/
+.generatedText, .newgentext {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    width: 75%;
 }
 
 .newgentext{
-  /*top:10%;*/
-  /*margin: 0 auto;*/
-  width: 60%;
-  margin-top: 10%;
-  position: absolute;
+
 }
 
 /*#generatedText h1{
 	white-space: pre;
 	font-size: 2.0em;
 }*/
-
-.sw {
-	text-align: center;
-}
-
-.sw p{
-	font-size: 1.0em
-}
-
-.sw .url{
-	font-size: 1.5em
-}
 
 /*#generatedText span {
 	display: inline-block;
