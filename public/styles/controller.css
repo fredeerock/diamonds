@@ -8,6 +8,10 @@ body {
 
 }
 
+html, body {
+  overflow:hidden;
+}
+
 #generatedText {
 
 }
