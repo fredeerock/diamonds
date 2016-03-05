@@ -9,7 +9,7 @@ body {
 }
 
 html, body {
-  /*overflow:hidden;*/
+  overflow:hidden;
 }
 
 #generatedText {
@@ -31,8 +31,8 @@ html, body {
   -webkit-overflow-scrolling: touch;
   overflow-y: scroll;
   /*overflow-x: scroll;*/
-  height: 500px;
-  width:100%;
+  /*height: 500px;*/
+  /*width:100%;*/
 
 
 /*    position: fixed; 
@@ -63,6 +63,7 @@ html, body {
 .myFrame {
   width: 100%;
   height: 500px;
+  z-index: 100;
 }
 
 .oldgentext{
