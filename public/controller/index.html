@@ -61,10 +61,10 @@
 			// console.log("itemback: " + data.phrase);
 			
 			if(pArray.length < pALimit) {
-				pArray.push(data.phrase);
+				pArray.unshift(data.phrase);
 				console.log("if", pArray.length);
 			} else {
-				pArray.push(data.phrase);
+				pArray.unshift(data.phrase);
 				pArray.pop();
 				console.log("else", pArray.length);
 			}
