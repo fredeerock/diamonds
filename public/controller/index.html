@@ -30,6 +30,9 @@
 		var socket = io.connect(window.location.origin , {transports:['websocket']} );
 
 		var currentPhrase;
+		var phraseArray = [];
+		var pACount = 0;
+		var pALimit = 10;
 
  		socket.emit('addme', {name: "controller"});
 		
@@ -44,7 +47,9 @@
 		socket.on('itemback', function(data){
 			document.getElementsByClassName('generatedText')[0].innerHTML= data.phrase;
 			console.log("itemback: " + data.phrase);
+			
 			currentPhrase = data.phrase;
+
 			var generatedText = document.getElementsByClassName('generatedText')[0];
 			// generatedText.classList.add("blurAnimation");
 			generatedText.classList.add("oldgentext");
