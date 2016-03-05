@@ -22,12 +22,12 @@
 </div>
 <hr />
 <div class="scroll-wrapper">
-	<iframe class="myFrame"></iframe>
+	<iframe src="" class="myFrame"></iframe>
 </div>
 <div class="scoreText"></div>
 
 	<script type="text/javascript">
-		document.getElementById("myFrame").src = window.location.host;
+		
 		// var socket = io.connect('130.39.92.112:8000/');
 		var socket = io.connect(window.location.origin , {transports:['websocket']} );
 
@@ -92,11 +92,18 @@
 			    // st.style.whiteSpace = "pre";
 			    // st.style.overflowX = "scroll";
 			    // st.style.overflowY = "scroll";
+
 			    
 			      
 			};
 			xhr.send();
+
 		};
+
+		document.addEventListener('DOMContentLoaded', function(event){
+			console.log("dom ready", window.location.host);
+			document.getElementsByClassName("myFrame")[0].src="http://"+window.location.host;
+		}, false);
 
 		function addEvents() {
 			document.getElementsByClassName('generatedText')[0].addEventListener("click", clickgo, false);
