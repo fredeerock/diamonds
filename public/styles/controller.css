@@ -60,6 +60,10 @@ html, body {
   overflow-y:scroll;*/
 }
 
+.myFrame {
+  width: 100%;
+}
+
 .oldgentext{
   /*blur(10px);*/
 }
