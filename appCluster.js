@@ -452,7 +452,8 @@ if(cluster.isMaster) {
 
 				var lines = markov.generateSentences(3);
 				var markovJoined = lines.join(' ');
-				// client.lpush("markov", linesJoined, redis.print);
+
+				client.lpush("markov", markovJoined);
 
 				io.sockets.emit('itemback', {phrase: markovJoined, color: socket.userColor});
 
@@ -515,6 +516,7 @@ if(cluster.isMaster) {
 			console.log("Section is now: "+ data);
 			currentSection = data;
 			sendSection(currentSection);
+			client.lpush("generatedPoem", currentSection);
 		})
 
 		// ***************************************************
