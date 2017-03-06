@@ -9,7 +9,7 @@ A system for interactive poetry.
 - [x] Theater
 - [x] Audio
 - [ ] save vincent controller clicks to redis database (Jesse)
-- [ ] fix controller so it has split view (Derick)
+- [x] fix controller so it has split view (Derick)
 - [ ] create a new node app that connects to redis database of vincenent clicks (Derick/Jesse?)
 
 ## To-Do Later

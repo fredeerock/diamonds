@@ -44,14 +44,14 @@ function handleRow(data) {
 	      // .replace(/[\r]/g, '\\r')
 	      .replace(/[\r]/g, ' ')
 	      .replace(/[\t]/g, '\\t')
-	    ; 
+	    ;
 	}
 }
 
 // when done reading the file display total number of items and quit redis connection
 function handleEnd() {
 	console.log('---Done reading file---');
-	client.llen(listName, function(err, len){
+	client.llen(listName+"set", function(err, len){
 		var totalItems = len
 		console.log("---Total Number of Items:", totalItems, "---");
 	});
