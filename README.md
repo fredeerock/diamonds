@@ -1,21 +1,23 @@
 # Diamonds
 A system for interactive poetry.
 
-## To-Do Now
+## To Do Now
+- [ ] save vincent controller clicks to redis database (Jesse)
+- [ ] create a new node app that connects to redis database of Vincent clicks (Derick/Jesse?)
+
+## To Do Later
+- [ ] stand-alone version
+  - don't show theater view
+  - have overlay ontop of index.html view of the markoving
+
+## Done
 - [x] TEDx transcript database
 - [x] Server (app.js)
 - [x] User
 - [x] Controller
 - [x] Theater
 - [x] Audio
-- [ ] save vincent controller clicks to redis database (Jesse)
 - [x] fix controller so it has split view (Derick)
-- [ ] create a new node app that connects to redis database of vincenent clicks (Derick/Jesse?)
-
-## To-Do Later
-- [ ] stand-alone version
-  - don't show theater view
-  - have overlay ontop of index.html view of the markoving
 
 ## User Interaction 1.0
 - Reader speaks the poem from **controller** site.
