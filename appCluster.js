@@ -282,7 +282,9 @@ if(cluster.isMaster) {
     							console.log(srCount+": "+entry.title);
     							
 							});
-							console.log(scanResults);
+							
+							// console.log(scanResults);
+
 							markoving(scanResults);
 
 			                return console.log("--- Done ---");
@@ -300,7 +302,6 @@ if(cluster.isMaster) {
 				for (var i = 0; i < d.length; i++) {
 					contents[i] = d[i].content;
 				}
-				
 				
 				var joinedText = contents.join(' '); 
 				
