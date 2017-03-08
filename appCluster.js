@@ -1,12 +1,16 @@
 // ************************************************
-// NEXUS Node Server
-// Jesse Allison (2016)
+//	NEXUS Node Server
+//	Jesse Allison (2016)
+//
+//	Before Launching:
+//		Start up redis with, redis-server
 //
 //	To Launch:
 //		NODE_ENV=production sudo node appCluster.js
 //		(sudo is required to launch on port 80.)
 //
-// To start server with Xtra RAM - NODE_DEBUG=cluster node --max_old_space_size=4096 appCluster.js
+//	To start server with Xtra RAM:
+//		NODE_DEBUG=cluster node --max_old_space_size=4096 appCluster.js
 // ************************************************
 
 // Setup web app
@@ -28,7 +32,7 @@ var redisAdapter = require('socket.io-redis');
 var serverPort = process.env.PORT || 80;
 var workers = process.env.WORKERS || workerNumber;
 var redisPort = process.env.REDISPORT || 6379;
-var redisIP = process.env.REDISIP || 127.0.0.1;
+var redisIP = process.env.REDISIP || "127.0.0.1";
 var redisUrl = process.env.REDISURL || 'redis://'+ redisIP +':' + redisPort;
 
 var app = express();
