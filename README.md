@@ -4,8 +4,8 @@ A system for interactive poetry.
 ## Tasks
 
 ### To Do Now
-- Bring in Causeway down under cluster handling (Derick)
-- Make sure cluster handling works with texts 
+- Bring in Causeway-down-under cluster handling (Derick)
+- Make sure cluster handling works with texts, perhaps make this happen in a modular fashion.
 - Spin up some VMs for testing (Derick)
 
 ### To Do Later
