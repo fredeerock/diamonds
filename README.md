@@ -4,10 +4,13 @@ A system for interactive poetry.
 ## Tasks
 
 ### To Do Now
-- [ ] save vincent controller clicks to redis database (Jesse)
-- [ ] create a new node app that connects to redis database of Vincent clicks (Derick/Jesse?)
+- Bring in Causeway down under cluster handling (Derick)
+- Make sure cluster handling works with texts 
+- Spin up some VMs for testing (Derick)
 
 ### To Do Later
+- [ ] create a new node app that connects to redis database of Vincent clicks
+- [ ] save Vincent controller clicks to redis database (Jesse)
 - [ ] stand-alone version
   - don't show theater view
   - have overlay ontop of index.html view of the markoving
