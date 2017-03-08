@@ -14,6 +14,13 @@ A system for interactive poetry.
 - [ ] stand-alone version
   - don't show theater view
   - have overlay ontop of index.html view of the markoving
+- [ ] Make 
+- [ ] Have redis component be a separate module
+
+### To Do One Day (NEXUS HUB)
+- [ ] Visualization, sonic (browser), anyone (Max, OSC, etc)
+- [ ] Mediated channels
+- [ ] Mixins
 
 ### Done
 - [x] TEDx transcript database
@@ -23,6 +30,10 @@ A system for interactive poetry.
 - [x] Theater
 - [x] Audio
 - [x] fix controller so it has split view (Derick)
+
+## Technical Description
+Each tap causes up to 10 entries from a csv to be joined into a single piece of text. Just one 3 sentence phrase is markoved together from this single piece of text is outputted to a queue ready to be viewed on the poet's controller screen. The poet clicks a next phrase button to see more availabe options. When the poet taps a phrae it gets sent to a theater view.
+
 
 ## User Interaction 1.0
 - Reader speaks the poem from **controller** site.

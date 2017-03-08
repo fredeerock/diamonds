@@ -36,7 +36,7 @@ function handleRow(data) {
 	      // .replace(/[\\]/g, '\\\\')
 	      .replace(/[\']/g, '')
 	      .replace(/[\"]/g, '')
-	      .replace(/[,]/g, '')
+	      .replace(/[\,]/g, '')
 	      .replace(/[\/]/g, '\\/')
 	      .replace(/[\b]/g, '\\b')
 	      .replace(/[\f]/g, '\\f')
@@ -51,10 +51,12 @@ function handleRow(data) {
 // when done reading the file display total number of items and quit redis connection
 function handleEnd() {
 	console.log('---Done reading file---');
-	client.llen(listName+"set", function(err, len){
-		var totalItems = len
-		console.log("---Total Number of Items:", totalItems, "---");
-	});
+	
+	// client.llen(listName+"set", function(err, len){
+	// 	var totalItems = len
+	// 	console.log("---Total Number of Items:", totalItems, "---");
+	// });
+
 	// client.lindex(listName, 1, function (err, data) {console.log(data)})
 	client.quit();
 }

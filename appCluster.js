@@ -222,14 +222,14 @@ if(cluster.isMaster) {
 			        "itemsset",
 			        cursor,
 			        'MATCH', '*'+idata+'*',
-			        'COUNT', '10',
+			        'COUNT', '10', // Find 10 occurances of the word that was tapped in the CORPUS.
 			        function(err, res) {
 			            if (err) throw err;
 
 			            // Update the cursor position for the next scan
 			            cursor = res[0];
 			            // get the SCAN result for this iteration
-			            var keys = res[1];	     
+			            var keys = res[1]; // 	     
 
 			            // Remember: more or less than COUNT or no keys may be returned
 			            // See http://redis.io/commands/scan#the-count-option
@@ -282,6 +282,7 @@ if(cluster.isMaster) {
     							console.log(srCount+": "+entry.title);
     							
 							});
+							console.log(scanResults);
 							markoving(scanResults);
 
 			                return console.log("--- Done ---");
