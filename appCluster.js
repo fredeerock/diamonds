@@ -6,11 +6,11 @@
 //		Start up redis with, redis-server
 //
 //	To Launch:
-//		NODE_ENV=production sudo node appCluster.js
+//		sudo NODE_ENV=production node appCluster.js
 //		(sudo is required to launch on port 80.)
 //
 //	To start server with Xtra RAM:
-//		NODE_DEBUG=cluster node --max_old_space_size=4096 appCluster.js
+//		sudo NODE_DEBUG=cluster node --max_old_space_size=4096 appCluster.js
 // ************************************************
 
 // Setup web app
@@ -28,7 +28,7 @@ var redis = require('redis');
 var redisAdapter = require('socket.io-redis');
 
 // Below process.env variables allow you to set parameters when starting the application.
-// For example you can run, PORT=8080 WORKERS=32 sudo node appCluster.js.
+// For example you can run, sudo PORT=8080 WORKERS=32 node appCluster.js.
 var serverPort = process.env.PORT || 80;
 var workers = process.env.WORKERS || workerNumber;
 var redisPort = process.env.REDISPORT || 6379;
@@ -72,6 +72,24 @@ if(cluster.isMaster) {
 	// Kickoff a Worker!
 	start();
 	var redisClient = redis.createClient();
+	
+	redisClient.on("error", function (err) {
+   		console.log("Error " + err);
+	});
+
+	var countdown = 1000;  
+	setInterval(function() {  
+  		countdown--;
+  		exports.inworker = function(input) {
+    		// console.log(input);
+    		// return input;
+		};
+
+	}, 1000);
+
+
+
+
 		// redisClient.lpush("markov", markovJoined);
 		//
 		// redisClient.lindex("markov", 0, function (err, data) {
