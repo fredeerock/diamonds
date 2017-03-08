@@ -71,24 +71,22 @@ if(cluster.isMaster) {
 } else {
 	// Kickoff a Worker!
 	start();
+
 	var redisClient = redis.createClient();
-	
+
 	redisClient.on("error", function (err) {
    		console.log("Error " + err);
 	});
 
-	var countdown = 1000;  
-	setInterval(function() {  
-  		countdown--;
-  		exports.inworker = function(input) {
-    		// console.log(input);
-    		// return input;
-		};
+	var rita = require('rita');
 
-	}, 1000);
+	var dataObj = [];
+	var listName = "items";
+	var listLength = 2000;
 
-
-
+	var markov = new rita.RiMarkov(4);
+	var markovArray = [];
+	var markovArrayCount = 0;
 
 		// redisClient.lpush("markov", markovJoined);
 		//
@@ -203,6 +201,156 @@ if(cluster.isMaster) {
 			// ioClients.remove(socket.id);	// FIXME: Remove client if they leave
 			io.sockets.emit('chat', 'SERVER: ' + socket.id + ' has left the building');
 		 });
+
+
+		socket.on('item' , function(data) {
+			console.log(socket.id + " tapped item: " + data);
+			// client.sscan(0, );
+			//sscan itemsset 0 match *Rwanda* count 2050
+			
+			var scanResults = [];
+			var cursor = '0';
+			
+			idata = data;
+			// console.log("outside data is", data);
+
+			sscan();
+			function sscan() {
+				// console.log("fucntion data is", idata);
+
+			    redisClient.sscan(
+			        "itemsset",
+			        cursor,
+			        'MATCH', '*'+idata+'*',
+			        'COUNT', '10',
+			        function(err, res) {
+			            if (err) throw err;
+
+			            // Update the cursor position for the next scan
+			            cursor = res[0];
+			            // get the SCAN result for this iteration
+			            var keys = res[1];	     
+
+			            // Remember: more or less than COUNT or no keys may be returned
+			            // See http://redis.io/commands/scan#the-count-option
+			            // Also, SCAN may return the same key multiple times
+			            // See http://redis.io/commands/scan#scan-guarantees
+			            // Additionally, you should always have the code that uses the keys
+			            // before the code checking the cursor.
+			            if (keys.length > 0) {
+							// if(keys != ''){
+								// console.log("hi");
+								// console.log(keys);
+								try {
+									// console.log(JSON.parse(keys).title);
+									if(scanResults.length<10) {
+										scanResults.push(JSON.parse(keys))
+									}
+								} catch (err){
+									console.log("error:", err)
+								}
+								// 
+							// } else {
+								// console.log("none");
+							// }
+			            	// console.log(keys);
+			                // console.log(JSON.parse(keys).title);
+			                // if (scanResults.length<10){
+			                	// scanResults.push(JSON.parse(keys));
+			                // } 
+			            }
+
+			            // It's important to note that the cursor and returned keys
+			            // vary independently. The scan is never complete until redis
+			            // returns a non-zero cursor. However, with MATCH and large
+			            // collections, most iterations will return an empty keys array.
+
+			            // Still, a cursor of zero DOES NOT mean that there are no keys.
+			            // A zero cursor just means that the SCAN is complete, but there
+			            // might be one last batch of results to process.
+
+			            // From <http://redis.io/commands/scan>:
+			            // 'An iteration starts when the cursor is set to 0,
+			            // and terminates when the cursor returned by the server is 0.'
+			            if (cursor === '0') {
+
+			            	console.log('--- Iteration complete, matches below ---');
+			            	var srCount = 0;
+			            	
+			            	scanResults.forEach(function(entry) {
+			            		srCount++;
+    							console.log(srCount+": "+entry.title);
+    							
+							});
+							markoving(scanResults);
+
+			                return console.log("--- Done ---");
+
+			            }
+
+			            return sscan(); //forgot about this. in the future should probably use this to pass data around instead of global idata.
+			        }
+			    );
+			}
+
+			function markoving(d) {
+				var contents = [];
+
+				for (var i = 0; i < d.length; i++) {
+					contents[i] = d[i].content;
+				}
+				
+				
+				var joinedText = contents.join(' '); 
+				
+				// console.log("*** LINES JOINED ***", joinedText);
+
+				markov.loadText(joinedText);
+
+				//sscan itemsset 0 match *Rwanda* count 2050
+				// handleParsing();
+				// LINDEX mylist 0
+
+				//  LOAD Talk from submitted word
+				//markov.loadText(dataObj[0].content);
+				
+				// ********* !!!!!!!!  FIXME: Once the array is loaded in redis, something like this will pull it back out for usage.
+				// var markovItem = client.LINDEX("markovArray", 0);
+				// ********* !!!!!!!!    
+
+				// console.log("markov size:", markov.size());
+				if (!markov.ready()) {
+					return console.log("markov not ready"); // Discontinue if markov is not ready
+				} 
+
+				// else {		
+				// 	console.log("markov ready!", "size is:". markov.size());
+				// }
+
+				var lines = markov.generateSentences(3);
+				var markovJoined = lines.join(' ');
+
+				redisClient.lpush("markov", markovJoined);
+
+				io.sockets.emit('itemback', {phrase: markovJoined, color: socket.userColor});
+
+				// client.lindex("markov", 0, function (err, data) {
+				// 	// io.sockets.emit('chat', data);
+				// 	// console.log(data);
+				// })
+
+				// diamonds > Sending to the Theatre if connected
+				// if(io.sockets.connected[theaterID]!== null) {
+				// 	io.sockets.connected[theaterID].emit('itemback', {
+				// 		phrase: markovJoined, 
+				// 		color: socket.userColor});
+				// }
+
+				// socket.broadcast.emit('itemback', {phrase: data, color: socket.userColor}, 1);
+				// oscSend.send('/causeway/phrase/number', socket.id, data);
+			}
+
+		}); 
 
 		 socket.on('sendchat', function(data) {
 			// Transmit to everyone who is connected //
