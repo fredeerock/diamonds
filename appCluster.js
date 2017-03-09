@@ -182,11 +182,30 @@ if(cluster.isMaster) {
 			var matchingTexts = [];
 			var cursor = '0';
 			
-			var returnedTexts = sscan(data);
-			console.log("Texts Returned _________\n"+ returnedTexts);
-			
-			function sscan(data) {
+			var tedTexts = sscan(data, function(returnedTexts) {
+				console.log("Texts Returned _________\n"+ returnedTexts);
+
+					// Now Markov the texts
+					// console.log(matchingTexts);
+				var generatedText = markoving(returnedTexts);
+				console.log("*** Generated Text ***", generatedText);
+						// Save generated sentances into redis.
+				if(generatedText){
+					redisClient.lpush("markov", generatedText);
+							// Send generated sentances to EVERYONE  FIXME: Should this only be a few people?
+					io.sockets.emit('itemback', {phrase: generatedText, color: socket.userColor});
+				}
+
+							// --- diamonds > Sending to the Theatre if connected ----
+				// if(io.sockets.connected[theaterID]!== null) {
+				// 	io.sockets.connected[theaterID].emit('itemback', {
+				// 		phrase: generatedText, 
+				// 		color: socket.userColor});
+				// }
 				
+			});
+			
+			function sscan(data, callWhenDone) {
 		    redisClient.sscan(
 	        "tedTalks",
 	        cursor,
@@ -208,9 +227,10 @@ if(cluster.isMaster) {
 		            // before the code checking the cursor.
             if (keys.length > 0) {
 							try {
+										// Keep adding matching texts until you get 10.
 											// console.log(JSON.parse(keys).title);
 								if(matchingTexts.length<10) {
-									matchingTexts.push(JSON.parse(keys))
+									matchingTexts.push(JSON.parse(keys));
 								}
 							} catch (err) {
 								console.log("error:", err)
@@ -231,20 +251,12 @@ if(cluster.isMaster) {
 		            // and terminates when the cursor returned by the server is 0.'
             if (cursor === '0') {
             	console.log('--- Iteration complete, matches below ---');
-            	var srCount = 0;
             	
-            	matchingTexts.forEach(function(entry) {
-            		srCount++;
-	 							console.log(srCount+": "+entry.title);		
-							});
-								// TODO: May move markoving outside of sscan...
-								// console.log(matchingTexts);
-							markoving(matchingTexts);
-
-              return console.log("--- Done ---");
+							callWhenDone(matchingTexts);
+              return matchingTexts;
             }
-
-						return matchingTexts;
+							// Iterate through sscan until you've reached cursor === '0' then end it! 
+						return sscan(data,callWhenDone);
         	}
 	    	);
 			}
@@ -252,9 +264,12 @@ if(cluster.isMaster) {
 			function markoving(textsToMarkov) {
 				var contents = [];
 						// Extracting the content from the text and making one large text to markov.
+				
 				for (var i = 0; i < textsToMarkov.length; i++) {
 					contents[i] = textsToMarkov[i].content;
+					console.log(i+": "+textsToMarkov[i].title);
 				}
+        	
 				var joinedText = contents.join(' '); 
 						// console.log("*** LINES JOINED ***", joinedText);
 
@@ -266,20 +281,8 @@ if(cluster.isMaster) {
 				} 
 
 				var lines = markov.generateSentences(3);
-			
-						// FIXME: Should this line be joined with a '. '
 				var markovJoined = lines.join(' ');
-						// Save generated sentances into redis.
-				redisClient.lpush("markov", markovJoined);
-						// Send generated sentances to EVERYONE  FIXME: Should this only be a few people?
-				io.sockets.emit('itemback', {phrase: markovJoined, color: socket.userColor});
-
-							// --- diamonds > Sending to the Theatre if connected ----
-				// if(io.sockets.connected[theaterID]!== null) {
-				// 	io.sockets.connected[theaterID].emit('itemback', {
-				// 		phrase: markovJoined, 
-				// 		color: socket.userColor});
-				// }
+				return markovJoined;
 			}
 		}); 
 
