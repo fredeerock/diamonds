@@ -2,8 +2,6 @@
 //
 // To start server with Xtra RAM - NODE_DEBUG=cluster node --max_old_space_size=4096 app.js
 
-// Todo: Incorporate Node Cluster
-
 // Notes: 
 // - There is no large data shared between workers. We can't just load up huge models in each worker as it fills up available ram very quickly.  Perhaps we can store smaller ones in redis and pull them as needed?
 // - We need to pull the Markov model generation out into it's own file to be run outside of the server and submit rita models to the redis server.  
@@ -342,7 +340,7 @@ if(cluster.isMaster) {
 				// console.log("fucntion data is", idata);
 
 			    client.sscan(
-			        "itemsset",
+			        "tedTalks",
 			        cursor,
 			        'MATCH', '*'+idata+'*',
 			        'COUNT', '10',
