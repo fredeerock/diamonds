@@ -236,7 +236,6 @@ if(cluster.isMaster) {
 								console.log("error:", err)
 							}
             }
-
 		            // It's important to note that the cursor and returned keys
 		            // vary independently. The scan is never complete until redis
 		            // returns a non-zero cursor. However, with MATCH and large
@@ -252,8 +251,8 @@ if(cluster.isMaster) {
             if (cursor === '0') {
             	console.log('--- Iteration complete, matches below ---');
             	
-							callWhenDone(matchingTexts);
-              return matchingTexts;
+							callWhenDone(matchingTexts); // go markov the results.
+              return matchingTexts;		// Must return here or it will loop for a LONG time.
             }
 							// Iterate through sscan until you've reached cursor === '0' then end it! 
 						return sscan(data,callWhenDone);
@@ -350,17 +349,31 @@ if(cluster.isMaster) {
 		});
 
 
+		socket.on('selectedPhrase', function(data) {
+			console.log("****** Phrase Selected: ******\n"+ data);
+			
+			redisClient.lpush("generatedPoem", data);
+
+			redisClient.get('theaterID', function(err, reply) {
+				theaterID =reply;
+				if(theaterID) {
+					io.to(theaterID).emit('selectedPhrase', {phrase: data});
+		    }
+			});
+
+			redisClient.get('audioControllerID', function(err, reply) {
+				audioControllerID =reply;
+				if(audioControllerID) {
+					io.to(audioControllerID).emit('/diamonds/selectedPhrase', {phrase: data}, 1);
+		    }
+			});
+		})
 
 		socket.on('section', function(data) {
 			console.log("Section is now: "+ data);
 			currentSection = data;
 			redisClient.set("currentSection", currentSection);
 			sendSection(currentSection);
-			
-			
-			// FIXME: Should move into its own function - submittedPoem or something
-			// 		Must also move the index.html file to the new method
-			redisClient.lpush("generatedPoem", currentSection);
 		})
 
 		// *********************
@@ -374,31 +387,22 @@ if(cluster.isMaster) {
 													"for a minute", 
 													"End"];
 
-		// Todo: Add sections to correspond to organ interactions
-		// sendSection(currentSection);	 // Sets everyone's section
-		sendSection = function (sect) {
-			// var title = sectionTitles[sect];
-			// io.sockets.emit('setSection', {sect: sect, title: title});
-			
-			// redisClient.get('theaterID', function(err, reply) {
-			// 	theaterID =reply;
-			// 	if(theaterID) {
-			// 		io.to(theaterID).emit('setSection', {section: sect, title: title}, 1);
-		  //   }
-			// });
-
-			redisClient.get('audioControllerID', function(err, reply) {
-					audioControllerID =reply;
-					if(audioControllerID) {
-							io.to(audioControllerID).emit('/diamonds/currentSection', {section: sect, title: title}, 1);
-							// console.log("Section sent", sect);
-			    }
-			});
-		};
-		
 		getSection = function(sect){
 			return sectionTitles[sect];
 		}
+
+		// sendSection(currentSection);	 // Sets everyone's section
+		sendSection = function (sect) {
+			var title = getSection(sect);
+			io.sockets.emit('setSection', {sect: sect, title: title});
+
+			redisClient.get('audioControllerID', function(err, reply) {
+				audioControllerID =reply;
+				if(audioControllerID) {
+					io.to(audioControllerID).emit('/diamonds/currentSection', {section: sect, title: title}, 1);
+		    }
+			});
+		};
 
 			// Section shared from Max to UIs
 		shareSection = function(sect) {

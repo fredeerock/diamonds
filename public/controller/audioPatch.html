@@ -39,6 +39,15 @@
 		console.log("The section is now: " + data.title);
 	});
 	
+	socket.on('/diamonds/selectedPhrase', function(data) {
+		// console.log("New Phrase: "+ data.phrase);
+		window.max.outlet('/diamonds/selectedPhrase'+" " + data.phrase)
+	});
+
+	socket.on('/causeway/registerUser', function(data) {
+		window.max.outlet('/causeway/registerUser'+ " "+ data.id+" "+ data.color+" "+ data.locationX+" "+ data.locationY+" "+ data.note);
+	});
+	
 	socket.on('triggerBeginning', function(data) {
 		window.max.outlet('playKepler');
 	});

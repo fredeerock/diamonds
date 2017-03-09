@@ -97,12 +97,11 @@
 			// // }
 		});
 
-		socket.on('setSection', function(data) {
-			console.log("the section is now: " + data.sect + ":" + data.title);
-			
-			document.getElementsByClassName('newgentext')[0].innerHTML= data.sect;
-
+		socket.on('selectedPhrase', function(data) {
+			console.log("New Phrase: "+ data.phrase);
+			document.getElementsByClassName('newgentext')[0].innerHTML= data.phrase;
 			var newgentext = document.getElementsByClassName('newgentext')[0];
+			
 			// generatedText.classList.add("blurAnimation");
 			// generatedText.classList.add("newgentext");
 			// var mf = 0;
@@ -138,6 +137,10 @@
 			// 	}
 
 			// }
+		});
+
+		socket.on('setSection', function(data) {
+			console.log("the section is now: " + data.sect + ":" + data.title);
 
 		});
 
