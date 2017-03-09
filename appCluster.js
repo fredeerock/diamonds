@@ -34,7 +34,7 @@ var redisClient;
 var serverPort = process.env.PORT || 80;
 var workers = process.env.WORKERS || workerNumber;
 var redisPort = process.env.REDISPORT || 6379;
-var redisIP = process.env.REDISIP || "127.0.0.1";
+var redisIP = process.env.REDISIP || "localhost";
 var redisUrl = process.env.REDISURL || 'redis://'+ redisIP +':' + redisPort;
 
 var app = express();
@@ -46,7 +46,7 @@ app.use(express.static(__dirname + '/public'));
 
 function startWorker() {
 	var httpServer = http.createServer(app);
-	var server = httpServer.listen(serverPort, function(err) {
+	var server = httpServer.listen(serverPort, 'localhost', null, function(err) {
 		if (err) return cb(err);
 		var uid = parseInt(process.env.SUDO_UID);	// Find out which user used sudo through the environment variable
 		if (uid) process.setuid(uid);			// Set our server's uid to that user
@@ -54,7 +54,8 @@ function startWorker() {
 	});
 
 	io = sio.listen(server);
-	io.adapter(redisAdapter({host: 'localhost', serverPort : redisPort }));
+	io.adapter(redisAdapter({host: redisIP, port : redisPort }));
+	
 	console.log('Redis adapter started with url: ' + redisUrl);
 	
 	redisClient = redis.createClient();
@@ -74,6 +75,8 @@ if(cluster.isMaster) {
 	cluster.on('death', function(worker) {
 		console.log('Worker %s died. restart...', worker.process.pid);
 	});
+	
+	// FYI!  The master spawns all of the worker nodes. If it is not running under root, the worker nodes cannot connect to port 80.  
 
 } else {
 			// ---- Kickoff a Worker! -----
@@ -103,11 +106,10 @@ if(cluster.isMaster) {
 	// *********************
 
 
-
 // Respond to web sockets with socket.on
 	io.sockets.on('connection', function (socket) {
 		var ioClientCounter = 0;		// Can I move this outside into global vars?
-
+		
 		socket.on('addme', function(data) {
 			var username = data.name;
 			var userColor = data.color;
@@ -142,7 +144,7 @@ if(cluster.isMaster) {
 			socket.userColor = userColor;
 			// socket.userNote = userNote;
 					// .emit to send message back to caller.
-			socket.emit('chat', 'SERVER: You have connected. Hello: ' + username + " " + socket.id + 'Color: ' + socket.userColor);
+			socket.emit('chat', 'SERVER: You have connected. Hello: ' + socket.username + " " + socket.id + 'Color: ' + socket.userColor);
 					// .broadcast to send message to all sockets.
 			//socket.broadcast.emit('chat', 'SERVER: A new user has connected: ' + username + " " + socket.id + 'Color: ' + socket.userColor);
 
@@ -164,7 +166,8 @@ if(cluster.isMaster) {
 				});
 			}
 		});
-
+		
+		console.log("IO post addme");
 
 		socket.on('disconnect', function() {
 					// ioClients.remove(socket.id);	// FIXME: Remove client if they leave
@@ -354,7 +357,7 @@ if(cluster.isMaster) {
 			
 			// FIXME: Should move into its own function - submittedPoem or something
 			// 		Must also move the index.html file to the new method
-			client.lpush("generatedPoem", currentSection);
+			redisClient.lpush("generatedPoem", currentSection);
 		})
 
 		// *********************
@@ -389,6 +392,10 @@ if(cluster.isMaster) {
 			    }
 			});
 		};
+		
+		getSection = function(sect){
+			return sectionTitles[sect];
+		}
 
 			// Section shared from Max to UIs
 		shareSection = function(sect) {
@@ -417,14 +424,13 @@ if(cluster.isMaster) {
 			return user;
 		};
 
+		function getRandomColor() {
+			var letters = '0123456789ABCDEF'.split('');
+			var color = '#';
+			for (var i = 0; i < 6; i++ ) {
+			    color += letters[Math.floor(Math.random() * 16)];
+			}
+			return color;
+		};
 	});
-
-	function getRandomColor() {
-		var letters = '0123456789ABCDEF'.split('');
-		var color = '#';
-		for (var i = 0; i < 6; i++ ) {
-		    color += letters[Math.floor(Math.random() * 16)];
-		}
-		return color;
-	}
 }
