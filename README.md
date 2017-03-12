@@ -32,7 +32,7 @@ A system for interactive poetry.
 - [x] fix controller so it has split view (Derick)
 
 ## Technical Description
-Each tap causes up to 10 entries from a csv to be joined into a single piece of text. Just one 3 sentence phrase is markoved together from this single piece of text is outputted to a queue ready to be viewed on the poet's controller screen. The poet clicks a next phrase button to see more availabe options. When the poet taps a phrae it gets sent to a theater view.
+A seed poem or "score" is presented to an audience. Audience members tap words from a score. These words are matched up with up to 10 entries from a csv to be joined into a single piece of text. Just one 3 sentence phrase is markoved together from this single piece of text and is outputted to a queue ready to be viewed on the poet's controller screen. The poet clicks a next phrase button to see more availabe options. When the poet taps a phrae it gets sent to a theater view.
 
 
 ## User Interaction 1.0
