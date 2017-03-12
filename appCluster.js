@@ -1,7 +1,7 @@
 // ************************************************
 //	NEXUS Node Server (Adapted for Diamonds in Dystopia)
 //	Jesse Allison (2016)
-//  Derick Ostrenko (2016)
+//	Derick Ostrenko (2016)
 //
 //	Before Launching:
 //		Start up redis with, redis-server
@@ -31,7 +31,7 @@ var redisClient;
 
 // Below process.env variables allow you to set parameters when starting the application.
 // For example you can run, sudo PORT=8080 WORKERS=32 node appCluster.js.
-var serverPort = process.env.PORT || 80;
+var serverPort = process.env.PORT || 8080;
 var workers = process.env.WORKERS || workerNumber;
 var redisPort = process.env.REDISPORT || 6379;
 var redisIP = process.env.REDISIP || "localhost";
@@ -49,7 +49,7 @@ function startWorker() {
 	var server = httpServer.listen(serverPort, 'localhost', null, function(err) {
 		if (err) return cb(err);
 		var uid = parseInt(process.env.SUDO_UID);	// Find out which user used sudo through the environment variable
-		if (uid) process.setuid(uid);			// Set our server's uid to that user
+		if (uid) process.setuid(uid);				// Set our server's uid to that user
 		console.log('Server\'s UID is now ' + process.getuid());
 	});
 
@@ -79,7 +79,7 @@ if(cluster.isMaster) {
 	// FYI!  The master spawns all of the worker nodes. If it is not running under root, the worker nodes cannot connect to port 80.  
 
 } else {
-			// ---- Kickoff a Worker! -----
+	// ---- Kickoff a Worker! -----
 	startWorker();
 
 	var rita = require('rita');
@@ -93,7 +93,7 @@ if(cluster.isMaster) {
 	var markovArrayCount = 0;
 
 	// *********************
-		// Global Variables!
+	// Global Variables!
 
 	var ioClients = [];		// list of clients who have logged in.
 	var currentSection = 0;		// current section.
@@ -104,7 +104,6 @@ if(cluster.isMaster) {
 			audioControllerID;
 
 	// *********************
-
 
 // Respond to web sockets with socket.on
 	io.sockets.on('connection', function (socket) {
@@ -138,7 +137,7 @@ if(cluster.isMaster) {
 				ioClients.push(socket.id);
 			}
 
-			socket.username = username;  // allows the username to be retrieved anytime the socket is used
+			socket.username = username;		// allows the username to be retrieved anytime the socket is used
 					// Can add any other pertinent details to the socket to be retrieved later
 			socket.userLocation = userLocation;
 			socket.userColor = userColor;
@@ -156,7 +155,7 @@ if(cluster.isMaster) {
 			    }
 			});
 
-					// If it is a normal user, alert the audioController
+			// If it is a normal user, alert the audioController
 			if(username == "a_user") {
 				redisClient.get('audioControllerID', function(err, reply) {
 						audioControllerID =reply;
@@ -206,58 +205,59 @@ if(cluster.isMaster) {
 			});
 			
 			function sscan(data, callWhenDone) {
-		    redisClient.sscan(
-	        "tedTalks",
-	        cursor,
-	        'MATCH', '*'+data+'*',
-	        'COUNT', '10', // Find 10 occurances of the word that was tapped in the CORPUS.
-	        function(err, res) {
-            if (err) throw err;
+			    redisClient.sscan(
+		        "tedTalks",
+		        cursor,
+		        'MATCH', '*'+data+'*',
+		        'COUNT', '10', // Find 10 occurances of the word that was tapped in the CORPUS.
+		        function(err, res) {
+	            if (err) throw err;
 
-            // Update the cursor position for the next scan
-            cursor = res[0];
-            // get the SCAN result for this iteration
-            var keys = res[1]; // 	     
+	            // Update the cursor position for the next scan
+	            cursor = res[0];
+	            // get the SCAN result for this iteration
+	            var keys = res[1]; // 	     
 
-		            // Remember: more or less than COUNT or no keys may be returned
-		            // See http://redis.io/commands/scan#the-count-option
-		            // Also, SCAN may return the same key multiple times
-		            // See http://redis.io/commands/scan#scan-guarantees
-		            // Additionally, you should always have the code that uses the keys
-		            // before the code checking the cursor.
-            if (keys.length > 0) {
-							try {
-										// Keep adding matching texts until you get 10.
-											// console.log(JSON.parse(keys).title);
-								if(matchingTexts.length<10) {
-									matchingTexts.push(JSON.parse(keys));
-								}
-							} catch (err) {
-								console.log("error:", err)
-							}
-            }
-		            // It's important to note that the cursor and returned keys
-		            // vary independently. The scan is never complete until redis
-		            // returns a non-zero cursor. However, with MATCH and large
-		            // collections, most iterations will return an empty keys array.
+			            // Remember: more or less than COUNT or no keys may be returned
+			            // See http://redis.io/commands/scan#the-count-option
+			            // Also, SCAN may return the same key multiple times
+			            // See http://redis.io/commands/scan#scan-guarantees
+			            // Additionally, you should always have the code that uses the keys
+			            // before the code checking the cursor.
+	            if (keys.length > 0) {
+					try {
+						// Keep adding matching texts until you get 10.
+						// console.log(JSON.parse(keys).title);
+						if(matchingTexts.length<10) {
+							matchingTexts.push(JSON.parse(keys));
+						}
+					} catch (err) {
+						console.log("error:", err)
+					}
+	            }
+	            
+	            // It's important to note that the cursor and returned keys
+	            // vary independently. The scan is never complete until redis
+	            // returns a non-zero cursor. However, with MATCH and large
+	            // collections, most iterations will return an empty keys array.
 
-		            // Still, a cursor of zero DOES NOT mean that there are no keys.
-		            // A zero cursor just means that the SCAN is complete, but there
-		            // might be one last batch of results to process.
+	            // Still, a cursor of zero DOES NOT mean that there are no keys.
+	            // A zero cursor just means that the SCAN is complete, but there
+	            // might be one last batch of results to process.
 
-		            // From <http://redis.io/commands/scan>:
-		            // 'An iteration starts when the cursor is set to 0,
-		            // and terminates when the cursor returned by the server is 0.'
-            if (cursor === '0') {
-            	console.log('--- Iteration complete, matches below ---');
-            	
-							callWhenDone(matchingTexts); // go markov the results.
-              return matchingTexts;		// Must return here or it will loop for a LONG time.
-            }
-							// Iterate through sscan until you've reached cursor === '0' then end it! 
-						return sscan(data,callWhenDone);
-        	}
-	    	);
+	            // From <http://redis.io/commands/scan>:
+	            // 'An iteration starts when the cursor is set to 0,
+	            // and terminates when the cursor returned by the server is 0.'
+	            if (cursor === '0') {
+	            	console.log('--- Iteration complete, matches below ---');
+	            	
+					callWhenDone(matchingTexts); // go markov the results.
+	            	return matchingTexts;		// Must return here or it will loop for a LONG time.
+	            }
+					// Iterate through sscan until you've reached cursor === '0' then end it! 
+					return sscan(data,callWhenDone);
+	        	}
+		    	);
 			}
 
 			function markoving(textsToMarkov) {

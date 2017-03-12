@@ -45,7 +45,7 @@ function handleRow(data) {
 	      // .replace(/[\\]/g, '\\\\')
 	      .replace(/[\']/g, '')
 	      .replace(/[\"]/g, '')
-	      .replace(/[\,]/g, '')
+	      .replace(/[\,]/g, '') // TODO: Commas are still messing things up!
 	      .replace(/[\/]/g, '\\/')
 	      .replace(/[\b]/g, '\\b')
 	      .replace(/[\f]/g, '\\f')
