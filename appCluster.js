@@ -46,7 +46,8 @@ app.use(express.static(__dirname + '/public'));
 
 function startWorker() {
 	var httpServer = http.createServer(app);
-	var server = httpServer.listen(serverPort, '0.0.0.0', null, function(err) {
+	// var server = httpServer.listen(serverPort, '0.0.0.0', null, function(err) { // make sire we're broadcasting on 0.0.0.0 so as to not just serve the site to ourselves
+	var server = httpServer.listen(serverPort, function(err) {
 		if (err) return cb(err);
 		var uid = parseInt(process.env.SUDO_UID);	// Find out which user used sudo through the environment variable
 		if (uid) process.setuid(uid);				// Set our server's uid to that user
