@@ -31,7 +31,7 @@ body {
 
 .url{
   position: absolute;
-  font-size: 0.35em;
+  font-size: 0.45em;
   color: rgba(255, 255, 255, 0.45);
   padding: 10px;
   top:0;
@@ -224,4 +224,20 @@ video#bgvid {
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s 2s, opacity 2s linear;
+}
+
+.theuserbars {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  /*vertical-align: bottom;*/
+  /*width: 20px;*/
+  height: 100%;
+  opacity: 0.4;
+}
+
+.singlebar {
+  /*position: fixed;*/
+  /*width: 20px;*/
+  height: 25px;
 }
