@@ -10,8 +10,6 @@
 <body>
 
 	<div class="url">emdm.io</div>
-
-
 	
 	<div class="allText">
 		<div class="sw">
@@ -19,20 +17,21 @@
 				<h1>Bound by Digital Countries</h1>
 			</div>
 		</div>
-		<div class="generatedText"></div>
+		<div class="generatedText generatedText1"></div>
+		<!-- <div class="generatedText generatedText2"></div> -->
 		<div class="newgentext"></div>
 	</div>
 
 	<script>
 
 	function getRandomColor() {
-	var letters = '0123456789ABCDEF'.split('');
-	var color = '#';
-	for (var i = 0; i < 6; i++ ) {
-	    color += letters[Math.floor(Math.random() * 16)];
+		var letters = '0123456789ABCDEF'.split('');
+		var color = '#';
+		for (var i = 0; i < 6; i++ ) {
+		    color += letters[Math.floor(Math.random() * 16)];
+		}
+		return color;
 	}
-	return color;
-}
 		// var socket = io.connect('http://emdm.io/', { path: '/sio/socket.io' });
  		// var socket = io.connect('http://emdm.io/sio');
 		// var socket = io.connect('127.0.0.1:8000/');
@@ -62,25 +61,61 @@
 		// }
 
 		// window.requestAnimationFrame(step);
+		
+		var c = 1;
+		var n1 = 0;
+		var n2 = 0;
+
+		function draw1() {
+			n1+=0.05;
+			// console.log(n);
+			document.getElementsByClassName('generatedText1')[0].style.opacity = n1;
+			if(n1>1) return;
+			requestAnimationFrame(draw1);
+		}
+
+		// function draw2() {
+		// 	n2+=0.01;
+		// 	// console.log(n);
+		// 	document.getElementsByClassName('generatedText2')[0].style.opacity = n2;
+		// 	if(n2>1) return;
+		// 	requestAnimationFrame(draw2);
+		// }
 
 		socket.on('itemback', function(data){
 
 			document.getElementsByClassName('sw')[0].style.display="none";
+
+			// setTimeout(function() {alert('hello');},1250);
+			// console.log("readsd");
+
+			console.log(c);
 			
-			// if(timer){
-				document.getElementsByClassName('generatedText')[0].innerHTML= data.phrase;
+			if(c==1){
+				document.getElementsByClassName('generatedText1')[0].innerHTML = data.phrase;
+				n1 = 0;
+				draw1();
+				// c=2;
+			}
 
-				console.log("itemback: " + data.phrase);
-
-				var generatedText = document.getElementsByClassName('generatedText')[0];
-				// generatedText.classList.add("blurAnimation");
-				// generatedText.classList.add("oldgentext");
-				var mf = 10;
-				generatedText.style.webkitFilter = "blur("+mf+"px)";
-				// console.log("COLOROOROROROROR", data.color);
-				generatedText.style.color = data.color;
+			// if(c==2){
+			// 	document.getElementsByClassName('generatedText2')[0].innerHTML = data.phrase;
+			// 	n2 = 0;
+			// 	draw2();
 			// }
-			
+
+			// document.getElementsByClassName('generatedText')[0].classList.add("visible");
+
+			console.log("itemback: " + data.phrase);
+
+			var generatedText = document.getElementsByClassName('generatedText')[0];
+			// generatedText.classList.add("blurAnimation");
+			// generatedText.classList.add("oldgentext");
+			var mf = 10;
+			generatedText.style.webkitFilter = "blur("+mf+"px)";
+			// console.log("COLOROOROROROROR", data.color);
+			generatedText.style.color = data.color;
+			// }
 
 			// var elements = document.getElementsByClassName(data.phrase);
 			// // for(var i = elements.length - 1; i >= 0; --i) {

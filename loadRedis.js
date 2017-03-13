@@ -20,9 +20,9 @@ var dataSet = "data/corpus.csv";
 //client.ltrim(listName, -1, -2, handleTrim);
 
 // Done Trimming (if trimming the list)
-function handleTrim() {
-	console.log("---Trimmed---");
-}
+// function handleTrim() {
+// 	console.log("---Trimmed---");
+// }
 
 client.flushall( function (err, res) {
     console.log("flush", res); // will be true if successfull
@@ -60,7 +60,7 @@ function handleRow(data) {
 		.replace(/[\n]/g, ' ')
 		.replace(/[\r]/g, ' ')
 		.replace(/[\t]/g, ' ')
-		.replace(/[-]/g, ' ')
+		.replace(/[-]/g, '')
 		// .replace(/[\']/g, '')
 		// .replace(/[\"]/g, '')
 		// .replace(/[,]/g, '')

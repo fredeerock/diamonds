@@ -176,7 +176,6 @@ small {
 
 .beforeGentext{
     display: none;
-    content: "";
     position: fixed;
     bottom: 65px;
     height: 25px;
