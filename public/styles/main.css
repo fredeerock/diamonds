@@ -174,7 +174,8 @@ small {
 	animation-fill-mode: both;*/
 }
 
-.gentext::before{
+.beforeGentext{
+    display: none;
     content: "";
     position: fixed;
     bottom: 65px;
@@ -185,6 +186,7 @@ small {
 }
 
 .gentext {
+  display: none;
   position: fixed;
   bottom: 0px;
   height: 50px;
