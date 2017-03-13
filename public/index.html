@@ -29,9 +29,10 @@
 		<p>Then tap the button to begin.</p>
 		<p><a href="#" class="myButton" onclick="Tone.startMobile();document.getElementsByClassName('welcomeText')[0].style.display = 'none';document.getElementsByClassName('scoreText')[0].style.display = 'block';">Start</a></p>
 		<p><em>Tapping is the new snapping!</em></p>
-	</div>
+	</div> <!-- END welcomeText DIV -->
 
 	<div class="scoreText"></div>
+	<div class="gentext"></div>
 <script>
 
 // (function($) {
@@ -215,8 +216,9 @@ socket.on('setSection', function(data) {
 // }
 
 socket.on('itemback', function(data){
-	// console.log("itemback: " + data.phrase);
-	// var elements = document.getElementsByClassName(data.phrase);
+	console.log("itemback:", data.phrase);
+	var elements = document.getElementsByClassName("gentext")[0];
+	elements.innerHTML = data.phrase; 
 	// elements[0].className += " clicked";
 });
 
@@ -311,6 +313,6 @@ function getRandomColor() {
 
 </script>
 
-</div>
+</div> <!-- END wrapper DIV -->
 </body>
 </html>

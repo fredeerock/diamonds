@@ -175,7 +175,7 @@ if(cluster.isMaster) {
 		});
 
 
-		socket.on('item' , function(data) {
+		socket.on('item', function(data) {
 					// --- Someone selected 'item', search for ted Talks that use the word, then markov them. --- //
 			console.log(socket.id + " tapped item: " + data);
 			
@@ -193,7 +193,13 @@ if(cluster.isMaster) {
 				if(generatedText){
 					redisClient.lpush("markov", generatedText);
 							// Send generated sentances to EVERYONE  FIXME: Should this only be a few people?
-					io.sockets.emit('itemback', {phrase: generatedText, color: socket.userColor});
+					sockets.emit('itemback', {phrase: generatedText, color: socket.userColor});
+					redisClient.get('controllerID', function(err, reply) {
+						controllerID = reply;
+						if(controllerID) {
+							io.to(controllerID).emit('itemback', {phrase: generatedText, color: socket.userColor});
+			    		}
+					});
 				}
 
 							// --- diamonds > Sending to the Theatre if connected ----
