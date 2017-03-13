@@ -183,7 +183,7 @@ if(cluster.isMaster) {
 			var cursor = '0';
 			
 			var tedTexts = sscan(data, function(returnedTexts) {
-				console.log("Texts Returned _________\n"+ returnedTexts);
+				console.log("Texts Returned _________\n", returnedTexts);
 
 					// Now Markov the texts
 					// console.log(matchingTexts);
