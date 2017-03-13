@@ -89,9 +89,9 @@
 			window.max.outlet('reset');
 		});
 
-		window.max.bindInlet('playChord', function(data) {
-			console.log("playChord: ", data);
-			socket.emit('playChord', {data});
+		window.max.bindInlet('playChord', function() {
+			//var notes = arguments.map(function(k) { return k	 });
+			socket.emit('playChord', arguments);
 		});
 
 		document.getElementById('the_click_button').addEventListener('click', function() {
