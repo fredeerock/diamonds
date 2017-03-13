@@ -1,4 +1,4 @@
-<html> 
+<html>
 <head>
 	<meta charset="utf-8">
 	<title>Diamonds</title>
@@ -15,30 +15,30 @@
 </head>
 
 <body>
-	
+
 	<button onclick="socket.emit('triggerBeginning')">Beginning</button>
 	<button onclick="socket.emit('nextChord')">New Chords</button>
 	<button onclick="socket.emit('triggerUtopalypse')">Utopia is our Apocalypse</button>
 	<button onclick="socket.emit('triggerDiamonds')">Diamonds in Distopia</button>
 	<button onclick="socket.emit('triggerEnding')">Ending</button>
-	
-	
+
+
 
 <script>
 
 	// var socket = io.connect('127.0.0.1:8000');
 	var socket = io.connect(window.location.origin , {transports:['websocket']} );
 	// var socket = io.connect('https://atlab.cct.lsu.edu/', { path: '/causeway/socket.io' });
-	
+
 	var myColor = getRandomColor();
 	var myLocation = [0.5, 0.5];	// Default centered
-	
+
 	socket.emit('addme', {name: "audio_controller", color: myColor, note: 60, location: myLocation});
-	
+
 	socket.on('setSection', function(data) {
 		console.log("The section is now: " + data.title);
 	});
-	
+
 	socket.on('/diamonds/selectedPhrase', function(data) {
 		// console.log("New Phrase: "+ data.phrase);
 		window.max.outlet('/diamonds/selectedPhrase'+" " + data.phrase)
@@ -47,7 +47,7 @@
 	socket.on('/causeway/registerUser', function(data) {
 		window.max.outlet('/causeway/registerUser'+ " "+ data.id+" "+ data.color+" "+ data.locationX+" "+ data.locationY+" "+ data.note);
 	});
-	
+
 	socket.on('triggerBeginning', function(data) {
 		window.max.outlet('playKepler');
 	});
@@ -76,8 +76,8 @@
 		}
 		return color;
 	}
-	
-	
+
+
 	document.addEventListener('DOMContentLoaded', function() {
 		window.max.outlet('DOM ready');
 		var i = 0;
@@ -89,14 +89,19 @@
 			window.max.outlet('reset');
 		});
 
+		window.max.bindInlet('playChord', function(data) {
+			console.log("playChord: ", data);
+			socket.emit('playChord', {data});
+		});
+
 		document.getElementById('the_click_button').addEventListener('click', function() {
 			window.max.outlet('click', ++i);
 		});
 
 	});
-	
-</script>	
-	
+
+</script>
+
 </body>
 
 

@@ -6,6 +6,7 @@ var DiamondSound = function () {
 
   this.chord = [68, 71, 75];
   this.chordRange = {low: -12, high: 12};
+  this.chordLength = '1m';
 
   this.tremolo = new Tone.Tremolo({
     "frequency":8,
@@ -26,6 +27,12 @@ var DiamondSound = function () {
     "release" : 2.0
    }
   }).connect(this.tremolo);
+
+  this.chordSynth = new Tone.PolySynth(4, Tone.Synth).toMaster();
+  this.chordSynth.set("volume", -24);
+//set the attributes using the set interface
+// synth.set("detune", -1200);
+
 
   this.playerUtopalypse = new Tone.Player("data/Utopalypse.mp3").toMaster();
   this.playerDiamonds = new Tone.Player("data/diamonds_in_distopia.mp3").toMaster();
@@ -63,11 +70,25 @@ DiamondSound.prototype.triggerPitch = function () {
   // socket.emit('triggerPitch', dSound.pitch);
 };
 
-DiamondSound.prototype.playChord = function (chordNotes) {
+DiamondSound.prototype.playChord = function (chordNotes, chordLength) {
   if(chordNotes) {
     this.chord = chordNotes;
   };
+  if (chordLength) {
+    this.chordLength = chordLength;
+  }
 
+  this.chordSynth.triggerAttackRelease(this.chord.map(this.tone.midiToNote), this.chordLength);
+};
+
+DiamondSound.prototype.sustainChord = function (chordNotes, chordLength) {
+  if(chordNotes) {
+    this.chord = chordNotes;
+  };
+  if (chordLength) {
+    this.chordLength = chordLength;
+  }
+  this.chordSynth.triggerAttackRelease(this.chord, this.chordLength);
 };
 
 DiamondSound.prototype.setChordRange = function () {
