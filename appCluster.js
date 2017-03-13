@@ -313,6 +313,13 @@ if(cluster.isMaster) {
 		})
 
 
+
+		socket.on('audience/enable', function(data) {
+			console.log("audience/enable", data);
+			io.sockets.emit('audienceEnable', data);
+		});
+		
+		
 		socket.on('nextChord', function(data) {
 			redisClient.get('audioControllerID', function(err, reply) {
 					audioControllerID =reply;
@@ -326,6 +333,11 @@ if(cluster.isMaster) {
 		socket.on('playChord', function(data) {
 			console.log("playChord", data);
 			io.sockets.emit('playChord', data);
+		});
+		
+		socket.on('sustainChord', function(data) {
+			console.log("sustainChord", data);
+			io.sockets.emit('sustainChord', data);
 		});
 
 		socket.on('triggerBeginning', function(data) {

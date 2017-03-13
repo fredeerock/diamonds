@@ -90,10 +90,33 @@
 		});
 
 		window.max.bindInlet('playChord', function() {
-			//var notes = arguments.map(function(k) { return k	 });
-			socket.emit('playChord', arguments);
+			var notes = [];
+			for(var key in arguments) {
+			    if(arguments.hasOwnProperty(key)) {
+			        notes.push(arguments[key]);
+			    }
+			}
+			socket.emit('playChord', {notes:notes, duration:'8m'});
+		});
+		
+		window.max.bindInlet('silence', function() {
+			socket.emit('silence');
+		});
+		
+		window.max.bindInlet('audience/enable', function(enabled) {
+			socket.emit('audience/enable', enabled);
 		});
 
+		window.max.bindInlet('sustainChord', function() {
+			var notes = [];
+			for(var key in arguments) {
+			    if(arguments.hasOwnProperty(key)) {
+			        notes.push(arguments[key]);
+			    }
+			}
+			socket.emit('sustainChord', {notes:notes, duration:'8m'});
+		});
+		
 		document.getElementById('the_click_button').addEventListener('click', function() {
 			window.max.outlet('click', ++i);
 		});

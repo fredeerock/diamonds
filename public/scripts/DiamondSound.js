@@ -8,13 +8,15 @@ var DiamondSound = function () {
   this.chordRange = {low: -12, high: 12};
   this.chordLength = '1m';
 
+	this.gainMaster = new Tone.Volume().toMaster();
+
   this.tremolo = new Tone.Tremolo({
     "frequency":8,
     "type":"sine",
     "depth":0.6,
     "spread":0
     //"wet": 0.8
-  }).toMaster().start();
+  }).connect(this.gainMaster).start();
 
   this.synth = new Tone.SimpleSynth({
     "oscillator" : {
@@ -27,23 +29,27 @@ var DiamondSound = function () {
     "release" : 2.0
    }
   }).connect(this.tremolo);
-
-  this.chordSynth = new Tone.PolySynth(4, Tone.Synth).toMaster();
-  this.chordSynth.set("volume", -24);
+	
+  this.chordSynth = new Tone.PolySynth(4, Tone.DuoSynth).connect(this.gainMaster);
+	this.chordVolume = -40;
+  this.chordSynth.set("volume", this.chordVolume);
+	this.chordSynth.set('vibratoAmount', 0.5);
+	this.chordSynth.set('vibratoRate',5);
+	this.chordSynth.set('harmonicity', 1.5);
 //set the attributes using the set interface
 // synth.set("detune", -1200);
 
 
-  this.playerUtopalypse = new Tone.Player("data/Utopalypse.mp3").toMaster();
-  this.playerDiamonds = new Tone.Player("data/diamonds_in_distopia.mp3").toMaster();
-  this.playerKepler = new Tone.Player("data/Kepler_Star.mp3").toMaster();
+  this.playerUtopalypse = new Tone.Player("data/Utopalypse.mp3").connect(this.gainMaster);
+  this.playerDiamonds = new Tone.Player("data/diamonds_in_distopia.mp3").connect(this.gainMaster);
+  this.playerKepler = new Tone.Player("data/Kepler_Star.mp3").connect(this.gainMaster);
     this.playerKepler.retrigger = 1;
-  this.playerEnding = new Tone.Player("data/Ending_for_a_minute.mp3").toMaster();
+  this.playerEnding = new Tone.Player("data/Ending_for_a_minute.mp3").connect(this.gainMaster);
 
 
-  //this.gainy = new Tone.Gain().toMaster();
+  //this.gainy = new Tone.Gain().connect(this.gainMaster);
   // this.filt2 = new Tone.Filter(this.tone.midiToNote(this.pitch+12), "bandpass").connect(this.gainy);
-  this.filt = new Tone.Filter(this.tone.midiToNote(this.pitch+12), "bandpass").toMaster();
+  this.filt = new Tone.Filter(this.tone.midiToNote(this.pitch+12), "bandpass").connect(this.gainMaster);
   this.filt.Q.value = 15;
   this.filt.gain.value = 50;
   // this.filt2.Q.value = 2;
@@ -59,6 +65,19 @@ var DiamondSound = function () {
   // meSpeak.speak('Diamonds');
   // }
 
+}
+
+DiamondSound.prototype.audienceEnable = function(enabled) {
+		console.log('enabled? ', enabled);
+	if(enabled) {
+		// this.gainMaster.volume.mute = false;
+		this.gainMaster.volume.val = 0.;
+		this.chordSynth.set("volume", this.chordVolume);
+	} else {
+		// this.gainMaster.volume.mute = true;
+		this.gainMaster.volume.val = -96;
+		this.chordSynth.set("volume", -96);
+	}
 }
 
 DiamondSound.prototype.playPitch = function () {
@@ -87,7 +106,9 @@ DiamondSound.prototype.sustainChord = function (chordNotes, chordLength) {
   };
   if (chordLength) {
     this.chordLength = chordLength;
-  }
+  } else {
+		chordLength = '8m';
+	}
   this.chordSynth.triggerAttackRelease(this.chord, this.chordLength);
 };
 

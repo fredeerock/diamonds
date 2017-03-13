@@ -230,6 +230,20 @@ socket.on('itemback', function(data){
 // 	elements[0].style.backgroundColor = myColor;
 // }
 
+
+socket.on('audienceEnable', function(data) {
+	console.log('enabled? ', data);
+	dSound.audienceEnable(data);
+});
+
+socket.on('playChord', function(data) {
+	dSound.playChord(data.notes, data.duration);
+});
+
+socket.on('sustainChord', function(data) {
+	dSound.playChord(data.notes, data.duration);
+});
+
 socket.on('triggerBeginning', function(data) {
 	dSound.playKepler();
 });
