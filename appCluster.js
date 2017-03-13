@@ -183,12 +183,12 @@ if(cluster.isMaster) {
 			var cursor = '0';
 			
 			var tedTexts = sscan(data, function(returnedTexts) {
-				console.log("Texts Returned _________\n", returnedTexts);
+				// console.log("*** Texts Returned ***\n", returnedTexts);
 
 					// Now Markov the texts
 					// console.log(matchingTexts);
 				var generatedText = markoving(returnedTexts);
-				console.log("*** Generated Text ***", generatedText);
+				console.log("*** Generated Text ***\n", generatedText);
 						// Save generated sentances into redis.
 				if(generatedText){
 					redisClient.lpush("markov", generatedText);
@@ -230,10 +230,12 @@ if(cluster.isMaster) {
 						// Keep adding matching texts until you get 10.
 						// console.log(JSON.parse(keys).title);
 						if(matchingTexts.length<10) {
+							// console.log("HERERERE:", keys);
 							matchingTexts.push(JSON.parse(keys));
 						}
 					} catch (err) {
-						console.log("error:", err)
+						// console.log("JSON Error", err)
+						// console.error("JSON Error")
 					}
 	            }
 	            

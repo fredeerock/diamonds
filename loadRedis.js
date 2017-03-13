@@ -50,20 +50,28 @@ function handleRow(data) {
 	    }
 	    
 	    return val
-		// .replace(/[\"]/g, '\\"')
-		// .replace(/[\\]/g, '\\\\')
-		.replace(/[\']/g, '')
+	    .replace(/[\']/g, '')
 		.replace(/[\"]/g, '')
-		.replace(/[,]/g, '') // TODO: Commas are still messing things up!
 		.replace(/[\\]/g, '')
-		.replace(/[\/]/g, '\\/')
-		.replace(/[\b]/g, '\\b')
-		.replace(/[\f]/g, '\\f')
+		.replace(/[\/]/g, ' ')
+		.replace(/[\b]/g, '')
+		.replace(/[\f]/g, '')
 		.replace(/[Í]/g, '')
-		.replace(/[\n]/g, '\\n')
+		.replace(/[\n]/g, ' ')
 		.replace(/[\r]/g, ' ')
-		.replace(/[\t]/g, '\\t')
-		// .replace(/[\r]/g, '\\r')
+		.replace(/[\t]/g, ' ')
+		.replace(/[-]/g, ' ')
+		// .replace(/[\']/g, '')
+		// .replace(/[\"]/g, '')
+		// .replace(/[,]/g, '')
+		// .replace(/[\\]/g, '')
+		// .replace(/[\/]/g, '\\/')
+		// .replace(/[\b]/g, '\\b')
+		// .replace(/[\f]/g, '\\f')
+		// .replace(/[Í]/g, '')
+		// .replace(/[\n]/g, '\\n')
+		// .replace(/[\r]/g, ' ')
+		// .replace(/[\t]/g, '\\t')
 	    ;
 	}
 }
