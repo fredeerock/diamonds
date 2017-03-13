@@ -27,7 +27,7 @@ var sio = require('socket.io');
 var io;
 var redis = require('redis');
 var redisAdapter = require('socket.io-redis');
-var redisClient;	
+var redisClient;
 
 // Below process.env variables allow you to set parameters when starting the application.
 // For example you can run, sudo PORT=8080 WORKERS=32 node appCluster.js.
@@ -56,9 +56,9 @@ function startWorker() {
 
 	io = sio.listen(server);
 	io.adapter(redisAdapter({host: redisIP, port : redisPort }));
-	
+
 	console.log('Redis adapter started with url: ' + redisUrl);
-	
+
 	redisClient = redis.createClient();
 	redisClient.on("error", function (err) {
    		console.log("Error " + err);
@@ -76,8 +76,8 @@ if(cluster.isMaster) {
 	cluster.on('death', function(worker) {
 		console.log('Worker %s died. restart...', worker.process.pid);
 	});
-	
-	// FYI!  The master spawns all of the worker nodes. If it is not running under root, the worker nodes cannot connect to port 80.  
+
+	// FYI!  The master spawns all of the worker nodes. If it is not running under root, the worker nodes cannot connect to port 80.
 
 } else {
 	// ---- Kickoff a Worker! -----
@@ -109,7 +109,7 @@ if(cluster.isMaster) {
 // Respond to web sockets with socket.on
 	io.sockets.on('connection', function (socket) {
 		var ioClientCounter = 0;		// Can I move this outside into global vars?
-		
+
 		socket.on('addme', function(data) {
 			var username = data.name;
 			var userColor = data.color;
@@ -166,7 +166,7 @@ if(cluster.isMaster) {
 				});
 			}
 		});
-		
+
 		console.log("IO post addme");
 
 		socket.on('disconnect', function() {
@@ -178,10 +178,10 @@ if(cluster.isMaster) {
 		socket.on('item', function(data) {
 					// --- Someone selected 'item', search for ted Talks that use the word, then markov them. --- //
 			console.log(socket.id + " tapped item: " + data);
-			
+
 			var matchingTexts = [];
 			var cursor = '0';
-			
+
 			var tedTexts = sscan(data, function(returnedTexts) {
 				// console.log("*** Texts Returned ***\n", returnedTexts);
 
@@ -193,11 +193,17 @@ if(cluster.isMaster) {
 				if(generatedText){
 					redisClient.lpush("markov", generatedText);
 							// Send generated sentances to EVERYONE  FIXME: Should this only be a few people?
-					sockets.emit('itemback', {phrase: generatedText, color: socket.userColor});
+					socket.emit('itemback', {phrase: generatedText, color: socket.userColor});
 					redisClient.get('controllerID', function(err, reply) {
 						controllerID = reply;
 						if(controllerID) {
 							io.to(controllerID).emit('itemback', {phrase: generatedText, color: socket.userColor});
+			    		}
+					});
+					redisClient.get('theaterID', function(err, reply) {
+						theaterID = reply;
+						if(theaterID) {
+							io.to(theaterID).emit('itemback', {phrase: generatedText, color: socket.userColor});
 			    		}
 					});
 				}
@@ -205,12 +211,12 @@ if(cluster.isMaster) {
 							// --- diamonds > Sending to the Theatre if connected ----
 				// if(io.sockets.connected[theaterID]!== null) {
 				// 	io.sockets.connected[theaterID].emit('itemback', {
-				// 		phrase: generatedText, 
+				// 		phrase: generatedText,
 				// 		color: socket.userColor});
 				// }
-				
+
 			});
-			
+
 			function sscan(data, callWhenDone) {
 			    redisClient.sscan(
 		        "tedTalks",
@@ -223,7 +229,7 @@ if(cluster.isMaster) {
 	            // Update the cursor position for the next scan
 	            cursor = res[0];
 	            // get the SCAN result for this iteration
-	            var keys = res[1]; // 	     
+	            var keys = res[1]; //
 
 			            // Remember: more or less than COUNT or no keys may be returned
 			            // See http://redis.io/commands/scan#the-count-option
@@ -244,7 +250,7 @@ if(cluster.isMaster) {
 						// console.error("JSON Error")
 					}
 	            }
-	            
+
 	            // It's important to note that the cursor and returned keys
 	            // vary independently. The scan is never complete until redis
 	            // returns a non-zero cursor. However, with MATCH and large
@@ -259,11 +265,11 @@ if(cluster.isMaster) {
 	            // and terminates when the cursor returned by the server is 0.'
 	            if (cursor === '0') {
 	            	console.log('--- Iteration complete, matches below ---');
-	            	
+
 					callWhenDone(matchingTexts); // go markov the results.
 	            	return matchingTexts;		// Must return here or it will loop for a LONG time.
 	            }
-					// Iterate through sscan until you've reached cursor === '0' then end it! 
+					// Iterate through sscan until you've reached cursor === '0' then end it!
 					return sscan(data,callWhenDone);
 	        	}
 		    	);
@@ -272,27 +278,27 @@ if(cluster.isMaster) {
 			function markoving(textsToMarkov) {
 				var contents = [];
 						// Extracting the content from the text and making one large text to markov.
-				
+
 				for (var i = 0; i < textsToMarkov.length; i++) {
 					contents[i] = textsToMarkov[i].content;
 					console.log(i+": "+textsToMarkov[i].title);
 				}
-        	
-				var joinedText = contents.join(' '); 
+
+				var joinedText = contents.join(' ');
 						// console.log("*** LINES JOINED ***", joinedText);
 
 				markov.loadText(joinedText);
 						// console.log("markov size:", markov.size());
-					
+
 				if (!markov.ready()) {
 					return console.log("markov not ready"); // Discontinue if markov is not ready
-				} 
+				}
 
 				var lines = markov.generateSentences(3);
 				var markovJoined = lines.join(' ');
 				return markovJoined;
 			}
-		}); 
+		});
 
 		socket.on('sendchat', function(data) {
 			// Transmit to everyone who is connected //
@@ -315,6 +321,11 @@ if(cluster.isMaster) {
 			    }
 			});
 			socket.broadcast.emit('triggerNextChord', data);
+		});
+
+		socket.on('playChord', function(data) {
+			console.log("playChord", data);
+			io.sockets.emit('playChord', data);
 		});
 
 		socket.on('triggerBeginning', function(data) {
@@ -360,7 +371,7 @@ if(cluster.isMaster) {
 
 		socket.on('selectedPhrase', function(data) {
 			console.log("****** Phrase Selected: ******\n"+ data);
-			
+
 			redisClient.lpush("generatedPoem", data);
 
 			redisClient.get('theaterID', function(err, reply) {
@@ -387,13 +398,13 @@ if(cluster.isMaster) {
 
 		// *********************
 		// Functions for handling stuff
-		
+
 		// **** SECTIONS ****
-		var sectionTitles = [	"Welcome", 
-													"Markov", 
-													"Diamonds in Distopia", 
-													"Markov", 
-													"for a minute", 
+		var sectionTitles = [	"Welcome",
+													"Markov",
+													"Diamonds in Distopia",
+													"Markov",
+													"for a minute",
 													"End"];
 
 		getSection = function(sect){
