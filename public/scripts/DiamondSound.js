@@ -34,7 +34,7 @@ var DiamondSound = function () {
 	this.chordVolume = -40;
   this.chordSynth.set("volume", this.chordVolume);
 	this.chordSynth.set('vibratoAmount', 0.5);
-	this.chordSynth.set('vibratoRate',5);
+	this.chordSynth.set('vibratoRate', 5);
 	this.chordSynth.set('harmonicity', 1.5);
 //set the attributes using the set interface
 // synth.set("detune", -1200);
