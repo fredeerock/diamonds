@@ -6,6 +6,9 @@
 	<link rel="stylesheet" href="../styles/theater.css">
 	<link href='http://fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
 	<script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="../scripts/Tone.js"></script>
+	<script type="text/javascript" src="../scripts/DiamondInstallationSound.js"></script>
+	
 </head>
 <body>
 
@@ -40,7 +43,7 @@
 		var socket = io.connect(window.location.origin , {transports:['websocket']} );
 
 
- 		socket.emit('addme', {name: "theater"});
+ 		socket.emit('addme', {name: "installation"});
 		
 		socket.on('chat', function(data) {
 			console.log(data);
@@ -87,7 +90,7 @@
 		var newDivBar;
 		var w1 = 10;
 		socket.on('itemback', function(data){
-
+			dSound.playBackground();
 			if(userbars[data.color] > 0) {
 				userbars[data.color] = userbars[data.color] + 1
 				// w1+=1;
@@ -254,6 +257,24 @@
 		// 		    },15);
 		// 		}
 		// 	}
+		
+		socket.on('triggerBeginning', function(data) {
+			dSound.playKepler();
+		});
+
+		socket.on('triggerUtopalypse', function(data) {
+			dSound.playUtopalypse();
+		});
+
+		socket.on('triggerDiamonds', function(data) {
+			dSound.playDiamonds();
+		});
+
+		socket.on('triggerEnding', function(data) {
+			dSound.playEnding();
+		});
+		
+		var dSound = new DiamondInstallationSound();
 
 	</script>
 

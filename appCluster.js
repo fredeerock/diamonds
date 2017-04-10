@@ -101,6 +101,7 @@ if(cluster.isMaster) {
 	redisClient.set("currentSection", currentSection);
 			// Specific clients who we only want one of.
 	var theaterID,
+			installationID,
 			conrollerID,
 			audioControllerID;
 
@@ -115,11 +116,17 @@ if(cluster.isMaster) {
 			var userColor = data.color;
 			// var userNote = data.note;
 			var userLocation = data.location || [0.5, 0.5];
-
+			
 			if(username == "theater"){
 				theaterID = socket.id;
 				redisClient.set("theaterID", theaterID);
 				console.log("Hello Theater: " + theaterID);
+			}
+			
+			if(username == "installation"){
+				installationID = socket.id;
+				redisClient.set("installationID", installationID);
+				console.log("Hello Installation: " + installationID);
 			}
 
 			if(username == "controller"){
@@ -206,6 +213,14 @@ if(cluster.isMaster) {
 							io.to(theaterID).emit('itemback', {phrase: generatedText, color: socket.userColor});
 			    		}
 					});
+					
+					redisClient.get('installationID', function(err, reply) {
+						installationID = reply;
+						if(installationID) {
+							io.to(installationID).emit('itemback', {phrase: generatedText, color: socket.userColor});
+			    		}
+					});
+					
 				}
 
 							// --- diamonds > Sending to the Theatre if connected ----
@@ -391,6 +406,13 @@ if(cluster.isMaster) {
 				if(theaterID) {
 					io.to(theaterID).emit('selectedPhrase', {phrase: data});
 		    }
+			});
+			
+			redisClient.get('installationID', function(err, reply) {
+				installationID = reply;
+				if(installationID) {
+					io.to(installationID).emit('selectedPhrase', {phrase: data});
+	    		}
 			});
 
 			redisClient.get('audioControllerID', function(err, reply) {
