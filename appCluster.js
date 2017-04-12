@@ -5,15 +5,17 @@
 //
 //	Before Launching:
 //		Install redis with,
-//			Mac: brew install redis
-//			Linux: yum install -y redis
+//			Mac with Homebrew: brew install redis
+//			Linux with Yum: yum install -y redis
 //
 //	To Launch for production:
-//		node loadRedis.js && sudo PORT=80 NODE_ENV=production node appCluster.js
+//		node loadRedis.js
+//		sudo PORT=80 NODE_ENV=production node appCluster.js
 //		(sudo is required to launch on port 80.)
 //
 //	To Launch for development:
-//		node loadRedis.js && NODE_DEBUG=cluster node appCluster.js
+//		node loadRedis.js
+//		NODE_DEBUG=cluster node appCluster.js
 //		(By default app runs on port 8080 with 2 times the number of CPUs for workers)
 //
 //	To start server with Xtra RAM:

@@ -17,16 +17,6 @@ rserver.open((err) => {
 
 	if (err === null) {
 
-		if(rserver.isRunning) {
-	  		console.log("Redis server started on port " + redisPortNumber + ".")
-	  	}
-
-
-    // You may now connect a client to the Redis
-    // server bound to `server.port` (e.g. 6379).
-
-
-// function loadTheDatabase(callback1) {
 		var client = redis.createClient();
 
 		client.on("error", function (err) {
@@ -50,7 +40,7 @@ rserver.open((err) => {
 
 		// Clean out the database 
 		client.flushall( function (err, res) {
-		    console.log("Flush went:", res + "."); // will be true if successfull
+		    console.log("Flushed", res + "."); // will be true if successfull
 		    // Load the data.
 			fs.createReadStream(dataSet).pipe(csv()).on('data', handleRow).on('end', handleEnd);
 		});
@@ -116,6 +106,11 @@ rserver.open((err) => {
 			client.quit(function (err, res) {
 				console.log("Client quit", res + ".");
 				if (res + "OK") {
+					
+					if(rserver.isRunning) {
+	  					console.log("Redis server running on port " + redisPortNumber + "...")
+	  				}
+
 					// var appCluster = require('./appCluster.js');
 					// appCluster.start1();
 				}

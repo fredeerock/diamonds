@@ -12,7 +12,7 @@
 </head>
 <body>
 
-	<div class="url">emdm.io</div>
+	<div class="url">Visit http://emdm.io to experience.</div>
 	
 	<div class="allText">
 		<div class="sw">
@@ -76,8 +76,10 @@
 			n1+=0.05;
 			// console.log(n);
 			document.getElementsByClassName('generatedText1')[0].style.opacity = n1;
+			// document.getElementsByClassName('generatedText1')[0].style.opacity = n1;
 			if(n1>1) return;
 			requestAnimationFrame(draw1);
+			// console.log("bobobob");
 		}
 
 		// function draw2() {
@@ -141,10 +143,20 @@
 			console.log("itemback:", data.color, data.phrase);
 
 			var generatedText = document.getElementsByClassName('generatedText')[0];
-			// generatedText.classList.add("blurAnimation");
-			// generatedText.classList.add("oldgentext");
+			
+			draw2();
 			var mf = 7;
-			generatedText.style.webkitFilter = "blur("+mf+"px)";
+			function draw2() {
+				// generatedText.classList.add("blurAnimation");
+				// generatedText.classList.add("oldgentext");
+				generatedText.style.webkitFilter = "blur("+mf+"px)";
+				mf = mf - 0.04;
+				console.log("hihi", mf);
+				if(mf < 0) return;
+				requestAnimationFrame(draw2);
+			}
+
+
 			// console.log("COLOROOROROROROR", data.color);
 			generatedText.style.color = data.color;
 			// }
