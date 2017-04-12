@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Theater View</title>
+	<title>Theater Installation View</title>
 	<link rel="stylesheet" href="../styles/theater.css">
 	<link href='http://fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet' type='text/css'>
 	<script src="/socket.io/socket.io.js"></script>
@@ -43,8 +43,9 @@
 		var socket = io.connect(window.location.origin , {transports:['websocket']} );
 
 
- 		socket.emit('addme', {name: "installation"});
-		
+ 		socket.emit('addme', {name: "theater"});
+ 		// socket.emit('addme', {name: "installation"});
+
 		socket.on('chat', function(data) {
 			console.log(data);
 			// document.getElementById("causeway-text").innerHTML= data;
@@ -151,7 +152,7 @@
 				// generatedText.classList.add("oldgentext");
 				generatedText.style.webkitFilter = "blur("+mf+"px)";
 				mf = mf - 0.04;
-				console.log("hihi", mf);
+				// console.log("hihi", mf);
 				if(mf < 0) return;
 				requestAnimationFrame(draw2);
 			}
