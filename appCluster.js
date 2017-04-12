@@ -4,14 +4,24 @@
 //	Derick Ostrenko (2016)
 //
 //	Before Launching:
-//		Start up redis with, redis-server
+//		0. Install redis with,
+//			Mac: brew install redis
+//			Linux: yum install -y redis
+//		1. Test redis is running with, redi-cli ping
+//		2. Start up redis with,
+//			Mac: redis-server
+//			Linux: systemctl start redis.service
 //
-//	To Launch:
-//		sudo NODE_ENV=production node appCluster.js
+//	To Launch for production:
+//		sudo PORT=80 NODE_ENV=production node appCluster.js
 //		(sudo is required to launch on port 80.)
 //
+//	To Launch for development:
+//		NODE_DEBUG=cluster node appCluster.js
+//		(By default app runs on port 8080 with 2 times the number of CPUs for workers)
+//
 //	To start server with Xtra RAM:
-//		sudo NODE_DEBUG=cluster node --max_old_space_size=4096 appCluster.js
+//		sudo node --max_old_space_size=4096 appCluster.js
 // ************************************************
 
 // Setup web app
@@ -41,14 +51,14 @@ var app = express();
 app.use(express.static(__dirname + '/public'));
 
 // server is the node server (web app via express)
-// this code can launch the server on port 80 and switch the user id away from sudo
-// apparently this makes it more secure - if something goes awry it isn't running under the superuser.
 
 function startWorker() {
 	var httpServer = http.createServer(app);
-	// var server = httpServer.listen(serverPort, '0.0.0.0', null, function(err) { // make sire we're broadcasting on 0.0.0.0 so as to not just serve the site to ourselves
+	// var server = httpServer.listen(serverPort, '0.0.0.0', null, function(err) { // make sure we're broadcasting on 0.0.0.0 so as to not just serve the site to ourselves
 	var server = httpServer.listen(serverPort, function(err) {
 		if (err) return cb(err);
+		// this code can launch the server on port 80 and switch the user id away from sudo
+		// apparently this makes it more secure - if something goes awry it isn't running under the superuser.
 		var uid = parseInt(process.env.SUDO_UID);	// Find out which user used sudo through the environment variable
 		if (uid) process.setuid(uid);				// Set our server's uid to that user
 		console.log('Server\'s UID is now ' + process.getuid());
@@ -66,7 +76,7 @@ function startWorker() {
 }
 
 if(cluster.isMaster) {
-	console.log('Start cluster with %s workers', workers - 1);
+	console.log('Start cluster with %s workers', workers);
 	workers--;
 	for (var i = 0; i < workers; ++i) {
 		var worker = cluster.fork();
@@ -79,7 +89,9 @@ if(cluster.isMaster) {
 
 	// FYI!  The master spawns all of the worker nodes. If it is not running under root, the worker nodes cannot connect to port 80.
 
-} else {
+}
+
+if(cluster.isWorker) {
 	// ---- Kickoff a Worker! -----
 	startWorker();
 
@@ -107,7 +119,7 @@ if(cluster.isMaster) {
 
 	// *********************
 
-// Respond to web sockets with socket.on
+	// Respond to web sockets with socket.on
 	io.sockets.on('connection', function (socket) {
 		var ioClientCounter = 0;		// Can I move this outside into global vars?
 
@@ -140,13 +152,15 @@ if(cluster.isMaster) {
 				redisClient.set("audioControllerID", audioControllerID);
 				console.log("Hello Audio Controller: " + audioControllerID);
 			}
-					// Not really using this...
+			
+			// Not really using this...
 			if(username == "a_user") {
 				ioClients.push(socket.id);
 			}
 
 			socket.username = username;		// allows the username to be retrieved anytime the socket is used
-					// Can add any other pertinent details to the socket to be retrieved later
+			
+			// Can add any other pertinent details to the socket to be retrieved later
 			socket.userLocation = userLocation;
 			socket.userColor = userColor;
 			// socket.userNote = userNote;
@@ -177,7 +191,7 @@ if(cluster.isMaster) {
 		console.log("IO post addme");
 
 		socket.on('disconnect', function() {
-					// ioClients.remove(socket.id);	// FIXME: Remove client if they leave
+			// ioClients.remove(socket.id);	// FIXME: Remove client if they leave
 			io.sockets.emit('chat', 'SERVER: ' + socket.id + ' has left the building');
 		});
 
@@ -223,7 +237,7 @@ if(cluster.isMaster) {
 					
 				}
 
-							// --- diamonds > Sending to the Theatre if connected ----
+				// --- diamonds > Sending to the Theatre if connected ----
 				// if(io.sockets.connected[theaterID]!== null) {
 				// 	io.sockets.connected[theaterID].emit('itemback', {
 				// 		phrase: generatedText,
