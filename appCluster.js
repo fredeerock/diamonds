@@ -4,20 +4,16 @@
 //	Derick Ostrenko (2016)
 //
 //	Before Launching:
-//		0. Install redis with,
+//		Install redis with,
 //			Mac: brew install redis
 //			Linux: yum install -y redis
-//		1. Test redis is running with, redi-cli ping
-//		2. Start up redis with,
-//			Mac: redis-server
-//			Linux: systemctl start redis.service
 //
 //	To Launch for production:
-//		sudo PORT=80 NODE_ENV=production node appCluster.js
+//		node loadRedis.js && sudo PORT=80 NODE_ENV=production node appCluster.js
 //		(sudo is required to launch on port 80.)
 //
 //	To Launch for development:
-//		NODE_DEBUG=cluster node appCluster.js
+//		node loadRedis.js && NODE_DEBUG=cluster node appCluster.js
 //		(By default app runs on port 8080 with 2 times the number of CPUs for workers)
 //
 //	To start server with Xtra RAM:
